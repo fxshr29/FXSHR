@@ -1,274 +1,282 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="FXSHR — Freelance Developer passionate about technology and complex collaboration." />
-  <title>FXSHR — Tech Freelancer</title>
+
+  <!-- ===== SEO ===== -->
+  <title>Felix — Designer & Developer · Digital Product Studio</title>
+  <meta name="description" content="Felix ist Designer & Developer für ambitionierte Marken. Ich gestalte und entwickle digitale Produkte, die ästhetisch herausragen und messbar performen. Verfügbar für neue Projekte." />
+  <meta name="keywords" content="Freelance Designer, Web Developer, UI UX Design, Webentwicklung, Digital Product Design, Frontend Developer, Brand Design, Felix" />
+  <meta name="author" content="Felix" />
+  <meta name="theme-color" content="#08080a" />
+  <link rel="canonical" href="https://felix.studio/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Felix — Designer & Developer" />
+  <meta property="og:description" content="Ich gestalte und entwickle digitale Produkte, die herausragen. Verfügbar für neue Projekte." />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:url" content="https://felix.studio/" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Felix — Designer & Developer" />
+  <meta name="twitter:description" content="Ich gestalte und entwickle digitale Produkte, die herausragen." />
+
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Felix",
+    "jobTitle": "Designer & Developer",
+    "description": "Freelance Designer & Developer für digitale Produkte.",
+    "url": "https://felix.studio/",
+    "knowsAbout": ["UI/UX Design", "Web Development", "Brand Design", "Frontend Engineering"],
+    "email": "fxshr@yahoo.com"
+  }
+  </script>
 </head>
 <body>
 
-  <!-- Loader -->
-  <div class="loader" id="loader">
-    <div class="loader-inner">
-      <div class="loader-brand"><span>FX</span>SHR</div>
-      <div class="loader-bar"><div class="loader-progress" id="loaderProgress"></div></div>
-      <div class="loader-label">Initializing…</div>
+  <!-- Grain overlay -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <!-- ===== LOADER ===== -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-content">
+      <div class="loader-name">FELIX</div>
+      <div class="loader-meta">
+        <span>Designer & Developer</span>
+        <span class="loader-count" id="loaderCount">0</span>
+      </div>
+      <div class="loader-track"><div class="loader-fill" id="loaderFill"></div></div>
     </div>
   </div>
 
-  <!-- Custom Cursor -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-trail" id="cursorTrail"></div>
-
-  <!-- Navigation -->
-  <nav class="nav" id="nav">
-    <div class="nav-container">
-      <a href="#hero" class="nav-logo">
-        <span class="logo-fx">FX</span><span class="logo-shr">SHR</span>
-        <div class="logo-pulse"></div>
+  <!-- ===== NAV ===== -->
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#top" class="nav-brand" data-cursor="hover">
+        Felix<span class="brand-dot">.</span>
       </a>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#about"    class="nav-link" data-text="About">About</a></li>
-        <li><a href="#skills"   class="nav-link" data-text="Skills">Skills</a></li>
-        <li><a href="#services" class="nav-link" data-text="Services">Services</a></li>
-        <li><a href="#projects" class="nav-link" data-text="Projects">Projects</a></li>
-        <li><a href="#contact"  class="nav-link" data-text="Contact">Contact</a></li>
-      </ul>
-      <a href="#contact" class="btn btn-nav">Hire Me</a>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
+      <nav class="nav-menu" id="navMenu" aria-label="Hauptnavigation">
+        <a href="#work"     class="nav-item" data-cursor="hover"><span>Work</span></a>
+        <a href="#about"    class="nav-item" data-cursor="hover"><span>About</span></a>
+        <a href="#services" class="nav-item" data-cursor="hover"><span>Services</span></a>
+        <a href="#contact"  class="nav-item" data-cursor="hover"><span>Contact</span></a>
+      </nav>
+      <a href="#contact" class="nav-cta" data-cursor="hover">
+        <span class="cta-status"></span>
+        Verfügbar
+      </a>
+      <button class="nav-burger" id="navBurger" aria-label="Menü öffnen" aria-expanded="false">
+        <span></span><span></span>
       </button>
     </div>
-  </nav>
+  </header>
 
   <!-- ===== HERO ===== -->
-  <section id="hero" class="hero">
-    <canvas id="particlesCanvas"></canvas>
-    <div class="hero-grid-bg"></div>
+  <main id="top">
+  <section class="hero" id="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
 
-    <div class="container hero-layout">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="badge-pulse"></span>
-          Available for Projects
-        </div>
+    <div class="hero-top">
+      <span class="hero-tag" data-reveal>
+        <span class="tag-dot"></span>
+        Freelance Designer &amp; Developer
+      </span>
+      <span class="hero-loc" data-reveal>
+        Based in Germany — <span id="localTime">--:--</span> CET
+      </span>
+    </div>
 
-        <h1 class="hero-title">
-          <span class="line-1">Leidenschaft für</span>
-          <span class="line-2 text-gradient">Technologie.</span>
-          <span class="line-3">Meisterschaft in</span>
-          <span class="line-4 text-gradient">Zusammenarbeit.</span>
-        </h1>
+    <h1 class="hero-title">
+      <span class="ht-line" data-reveal><span>Ich gestalte</span></span>
+      <span class="ht-line" data-reveal><span><em>digitale</em> Produkte,</span></span>
+      <span class="ht-line" data-reveal><span>die <em>herausragen</em></span></span>
+      <span class="ht-line" data-reveal><span>&amp; performen.</span></span>
+    </h1>
 
-        <p class="hero-sub">
-          I build <span class="glow-word">complex systems</span>, architect scalable solutions,<br />
-          and thrive where technology meets collaboration.
-        </p>
-
-        <div class="hero-role">
-          <span class="role-label">I specialize in</span>
-          <span class="typewriter-wrap">
-            <span id="typewriter"></span><span class="caret">|</span>
-          </span>
-        </div>
-
-        <div class="hero-actions">
-          <a href="#contact" class="btn btn-primary">
-            Start a Project
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-          <a href="#projects" class="btn btn-ghost">View Work</a>
-        </div>
-
-        <div class="hero-stats">
-          <div class="stat-item">
-            <span class="stat-n" data-target="50">0</span><span class="stat-suf">+</span>
-            <span class="stat-lbl">Projects</span>
-          </div>
-          <div class="stat-div"></div>
-          <div class="stat-item">
-            <span class="stat-n" data-target="5">0</span><span class="stat-suf">+</span>
-            <span class="stat-lbl">Years XP</span>
-          </div>
-          <div class="stat-div"></div>
-          <div class="stat-item">
-            <span class="stat-n" data-target="30">0</span><span class="stat-suf">+</span>
-            <span class="stat-lbl">Clients</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-visual">
-        <!-- Code card -->
-        <div class="code-card glass-card">
-          <div class="card-chrome">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-            <span class="chrome-title">profile.ts</span>
-          </div>
-          <pre class="code-body"><code
-><span class="t-kw">interface</span> <span class="t-type">FXSHRProfile</span> {
-  <span class="t-prop">passion</span>:        <span class="t-str">"Technology"</span>;
-  <span class="t-prop">speciality</span>:    <span class="t-str">"Complex Systems"</span>;
-  <span class="t-prop">collaboration</span>: <span class="t-val">true</span>;
-  <span class="t-prop">availability</span>:  <span class="t-str">"Now"</span>;
-}
-
-<span class="t-kw">const</span> <span class="t-var">fxshr</span>: FXSHRProfile = {
-  passion:        <span class="t-str">"Technology"</span>,
-  speciality:     <span class="t-str">"Complex Systems"</span>,
-  collaboration:  <span class="t-val">true</span>,
-  availability:   <span class="t-str">"Now"</span>, <span class="t-cm">// ← reach out!</span>
-};</code></pre>
-        </div>
-        <!-- Floating tags -->
-        <div class="ftag ftag-1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Full-Stack
-        </div>
-        <div class="ftag ftag-2">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          AI & Systems
-        </div>
-        <div class="ftag ftag-3">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Collaboration
-        </div>
+    <div class="hero-bottom">
+      <p class="hero-lead" data-reveal>
+        Felix — Designer &amp; Developer an der Schnittstelle von
+        Ästhetik und Technik. Ich verwandle ambitionierte Ideen in
+        Produkte, die sich premium anfühlen und messbar wirken.
+      </p>
+      <div class="hero-actions" data-reveal>
+        <a href="#contact" class="btn btn-light magnetic" data-cursor="hover">
+          <span>Projekt starten</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="#work" class="btn btn-line magnetic" data-cursor="hover">
+          <span>Arbeiten ansehen</span>
+        </a>
       </div>
     </div>
 
-    <div class="scroll-hint">
-      <div class="scroll-line-anim"></div>
-      <span>scroll</span>
+    <div class="hero-scroll" data-reveal>
+      <span>Scroll</span>
+      <span class="scroll-bar"><span class="scroll-fill"></span></span>
+    </div>
+  </section>
+  </main>
+
+  <!-- ===== MARQUEE ===== -->
+  <section class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Product Design</span><span class="m-sep">✦</span>
+      <span>Web Development</span><span class="m-sep">✦</span>
+      <span>Brand Identity</span><span class="m-sep">✦</span>
+      <span>Design Systems</span><span class="m-sep">✦</span>
+      <span>Motion</span><span class="m-sep">✦</span>
+      <span>Product Design</span><span class="m-sep">✦</span>
+      <span>Web Development</span><span class="m-sep">✦</span>
+      <span>Brand Identity</span><span class="m-sep">✦</span>
+      <span>Design Systems</span><span class="m-sep">✦</span>
+      <span>Motion</span><span class="m-sep">✦</span>
+    </div>
+  </section>
+
+  <!-- ===== WORK ===== -->
+  <section class="section work" id="work">
+    <div class="section-head">
+      <span class="eyebrow" data-reveal>Selected Work</span>
+      <h2 class="section-title" data-reveal>
+        Ausgewählte <em>Projekte</em>
+      </h2>
+    </div>
+
+    <div class="work-list">
+      <a href="#contact" class="work-item" data-cursor="view" data-reveal>
+        <div class="wi-index">01</div>
+        <div class="wi-main">
+          <h3 class="wi-title">Lumen Finance</h3>
+          <p class="wi-desc">Banking-Plattform · Product Design &amp; Frontend</p>
+        </div>
+        <div class="wi-tags">
+          <span>UX/UI</span><span>React</span><span>Design System</span>
+        </div>
+        <div class="wi-year">2025</div>
+        <div class="wi-media">
+          <div class="wm-inner grad-1"></div>
+        </div>
+      </a>
+
+      <a href="#contact" class="work-item" data-cursor="view" data-reveal>
+        <div class="wi-index">02</div>
+        <div class="wi-main">
+          <h3 class="wi-title">Atelier Nord</h3>
+          <p class="wi-desc">Brand &amp; Editorial Website · Designstudio</p>
+        </div>
+        <div class="wi-tags">
+          <span>Branding</span><span>Webflow</span><span>Motion</span>
+        </div>
+        <div class="wi-year">2025</div>
+        <div class="wi-media">
+          <div class="wm-inner grad-2"></div>
+        </div>
+      </a>
+
+      <a href="#contact" class="work-item" data-cursor="view" data-reveal>
+        <div class="wi-index">03</div>
+        <div class="wi-main">
+          <h3 class="wi-title">Pulse Health</h3>
+          <p class="wi-desc">Health-Tech App · End-to-End Produkt</p>
+        </div>
+        <div class="wi-tags">
+          <span>Product</span><span>iOS</span><span>Prototyping</span>
+        </div>
+        <div class="wi-year">2024</div>
+        <div class="wi-media">
+          <div class="wm-inner grad-3"></div>
+        </div>
+      </a>
+
+      <a href="#contact" class="work-item" data-cursor="view" data-reveal>
+        <div class="wi-index">04</div>
+        <div class="wi-main">
+          <h3 class="wi-title">Vertex SaaS</h3>
+          <p class="wi-desc">B2B Dashboard · Design &amp; Development</p>
+        </div>
+        <div class="wi-tags">
+          <span>SaaS</span><span>TypeScript</span><span>Data Viz</span>
+        </div>
+        <div class="wi-year">2024</div>
+        <div class="wi-media">
+          <div class="wm-inner grad-4"></div>
+        </div>
+      </a>
     </div>
   </section>
 
   <!-- ===== ABOUT ===== -->
-  <section id="about" class="section about-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">// About Me</span>
-        <h2 class="section-title">Tech ist nicht nur mein Job.<br /><span class="text-gradient">Es ist meine Obsession.</span></h2>
-      </div>
-
-      <div class="about-grid">
-        <div class="about-visual-col reveal">
-          <div class="profile-orb">
-            <div class="orb-ring r1"></div>
-            <div class="orb-ring r2"></div>
-            <div class="orb-ring r3"></div>
-            <div class="orb-core">FX</div>
-          </div>
-          <div class="about-accent-card glass-card">
-            <span class="accent-icon">⚡</span>
-            <div class="accent-text">
-              <strong>Always Evolving</strong>
-              <span>Cutting-edge tech stack</span>
-            </div>
+  <section class="section about" id="about">
+    <div class="about-grid">
+      <div class="about-left">
+        <span class="eyebrow" data-reveal>About</span>
+        <div class="about-portrait" data-reveal>
+          <div class="portrait-glass">
+            <span class="portrait-mono">FX</span>
           </div>
         </div>
-
-        <div class="about-text-col reveal">
-          <p class="about-p">
-            Ich bin ein leidenschaftlicher Entwickler mit einem tiefen Faible für <strong>komplexe Systeme</strong> und technische Herausforderungen. Was andere als unmöglich bezeichnen, ist für mich eine spannende Aufgabe.
-          </p>
-          <p class="about-p">
-            Mit jahrelanger Erfahrung in Systemarchitektur und Full-Stack-Entwicklung bringe ich nicht nur technisches Know-how, sondern auch die Fähigkeit zur <strong>nahtlosen Zusammenarbeit</strong> in interdisziplinären Teams.
-          </p>
-
-          <div class="value-list">
-            <div class="value-row">
-              <div class="v-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-              <div><strong>Performance First</strong><span>Optimiert bis ins letzte Bit</span></div>
-            </div>
-            <div class="value-row">
-              <div class="v-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-              <div><strong>Collaboration Expert</strong><span>Meisterhaft in Teamarbeit</span></div>
-            </div>
-            <div class="value-row">
-              <div class="v-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-              <div><strong>Deep Problem Solver</strong><span>Komplexität ist kein Hindernis</span></div>
-            </div>
-            <div class="value-row">
-              <div class="v-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-              <div><strong>Continuous Growth</strong><span>Immer am Puls der Technologie</span></div>
-            </div>
+        <div class="about-facts" data-reveal>
+          <div class="fact">
+            <span class="fact-n" data-count="8">0</span><span class="fact-suf">+</span>
+            <span class="fact-l">Jahre Erfahrung</span>
+          </div>
+          <div class="fact">
+            <span class="fact-n" data-count="60">0</span><span class="fact-suf">+</span>
+            <span class="fact-l">Projekte geliefert</span>
+          </div>
+          <div class="fact">
+            <span class="fact-n" data-count="40">0</span><span class="fact-suf">+</span>
+            <span class="fact-l">Zufriedene Kunden</span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ===== SKILLS ===== -->
-  <section id="skills" class="section skills-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">// Tech Stack</span>
-        <h2 class="section-title">Tools of the <span class="text-gradient">Trade</span></h2>
-      </div>
+      <div class="about-right">
+        <p class="about-statement" data-reveal>
+          Ich bin Felix — <em>Designer &amp; Developer</em>, der die seltene
+          Kombination aus gestalterischem Auge und technischer Tiefe vereint.
+          Statt Entwürfe an andere zu übergeben, gestalte und baue ich selbst —
+          vom ersten Pixel bis zur produktiven Anwendung.
+        </p>
+        <p class="about-text" data-reveal>
+          Mein Ansatz ist minimalistisch und kompromisslos. Jedes Detail hat
+          einen Grund, jede Animation einen Zweck. Ich arbeite eng mit Gründern
+          und Teams zusammen, die wissen, dass exzellentes Design kein
+          Nice-to-have ist, sondern ein Wettbewerbsvorteil.
+        </p>
 
-      <div class="skills-grid">
-        <div class="skill-cat glass-card reveal">
-          <h3 class="cat-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Languages
-          </h3>
-          <div class="tags">
-            <span class="tag">TypeScript</span>
-            <span class="tag">Python</span>
-            <span class="tag">Go</span>
-            <span class="tag">Rust</span>
-            <span class="tag">SQL</span>
-            <span class="tag">Bash</span>
+        <div class="about-skills" data-reveal>
+          <div class="skill-col">
+            <h4>Design</h4>
+            <ul>
+              <li>Product &amp; UI/UX Design</li>
+              <li>Design Systems</li>
+              <li>Brand Identity</li>
+              <li>Prototyping &amp; Motion</li>
+            </ul>
           </div>
-        </div>
-
-        <div class="skill-cat glass-card reveal">
-          <h3 class="cat-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            Frontend
-          </h3>
-          <div class="tags">
-            <span class="tag t-primary">React</span>
-            <span class="tag t-primary">Next.js</span>
-            <span class="tag">Vue.js</span>
-            <span class="tag">Tailwind</span>
-            <span class="tag">Three.js</span>
-            <span class="tag">WebGL</span>
-          </div>
-        </div>
-
-        <div class="skill-cat glass-card reveal">
-          <h3 class="cat-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-            Backend & DB
-          </h3>
-          <div class="tags">
-            <span class="tag t-secondary">Node.js</span>
-            <span class="tag t-secondary">FastAPI</span>
-            <span class="tag">PostgreSQL</span>
-            <span class="tag">MongoDB</span>
-            <span class="tag">Redis</span>
-            <span class="tag">GraphQL</span>
-          </div>
-        </div>
-
-        <div class="skill-cat glass-card reveal">
-          <h3 class="cat-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-            DevOps & Cloud
-          </h3>
-          <div class="tags">
-            <span class="tag t-accent">Docker</span>
-            <span class="tag t-accent">Kubernetes</span>
-            <span class="tag">AWS</span>
-            <span class="tag">GitHub Actions</span>
-            <span class="tag">Terraform</span>
-            <span class="tag">Linux</span>
+          <div class="skill-col">
+            <h4>Development</h4>
+            <ul>
+              <li>React &amp; Next.js</li>
+              <li>TypeScript</li>
+              <li>Webflow &amp; Framer</li>
+              <li>Performance &amp; SEO</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -276,268 +284,134 @@
   </section>
 
   <!-- ===== SERVICES ===== -->
-  <section id="services" class="section services-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">// Services</span>
-        <h2 class="section-title">What I Build <span class="text-gradient">for You</span></h2>
-      </div>
-
-      <div class="services-grid">
-        <div class="svc-card glass-card reveal">
-          <div class="svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </div>
-          <h3>Full-Stack Development</h3>
-          <p>Von der Datenbankschicht bis zur UI — ich entwickle vollständige, skalierbare Webanwendungen die in Produktion performen.</p>
-          <div class="svc-tags"><span>React</span><span>Node.js</span><span>TypeScript</span></div>
-        </div>
-
-        <div class="svc-card glass-card reveal">
-          <div class="svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
-          </div>
-          <h3>System Architecture</h3>
-          <p>Robuste, skalierbare Architekturen für komplexe Anforderungen — microservices, event-driven, oder maßgeschneidert.</p>
-          <div class="svc-tags"><span>Microservices</span><span>API Design</span><span>Scalability</span></div>
-        </div>
-
-        <div class="svc-card glass-card reveal">
-          <div class="svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-          </div>
-          <h3>DevOps & CI/CD</h3>
-          <p>Automatisierte Deployment-Pipelines, Container-Orchestrierung und Cloud-Infrastruktur für reibungslose Entwicklungsprozesse.</p>
-          <div class="svc-tags"><span>Docker</span><span>K8s</span><span>CI/CD</span></div>
-        </div>
-
-        <div class="svc-card glass-card reveal">
-          <div class="svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          </div>
-          <h3>AI Integration</h3>
-          <p>Integration moderner KI-Modelle in bestehende Systeme. Von LLM-Pipelines bis zu intelligenten Automatisierungen.</p>
-          <div class="svc-tags"><span>LLMs</span><span>RAG</span><span>Automation</span></div>
-        </div>
-
-        <div class="svc-card glass-card reveal">
-          <div class="svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3>Technical Consulting</h3>
-          <p>Technische Beratung für komplexe Entscheidungen — Technologiewahl, Code-Reviews und Architektur-Strategie.</p>
-          <div class="svc-tags"><span>Architecture</span><span>Code Review</span><span>Strategy</span></div>
-        </div>
-
-        <div class="svc-card glass-card svc-cta reveal">
-          <div class="svc-cta-inner">
-            <div class="svc-cta-icon">🚀</div>
-            <h3>Haben Sie ein komplexes Problem?</h3>
-            <p>Ich liebe schwierige technische Herausforderungen. Sprechen Sie mich an!</p>
-            <a href="#contact" class="btn btn-primary">Let's Talk</a>
-          </div>
-        </div>
-      </div>
+  <section class="section services" id="services">
+    <div class="section-head">
+      <span class="eyebrow" data-reveal>Services</span>
+      <h2 class="section-title" data-reveal>
+        Wie ich <em>helfe</em>
+      </h2>
     </div>
-  </section>
 
-  <!-- ===== PROJECTS ===== -->
-  <section id="projects" class="section projects-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">// Selected Work</span>
-        <h2 class="section-title">Projects that <span class="text-gradient">Define Me</span></h2>
-      </div>
+    <div class="services-list">
+      <article class="svc-row" data-reveal data-cursor="hover">
+        <div class="svc-num">01</div>
+        <h3 class="svc-name">Product Design</h3>
+        <p class="svc-text">
+          Von der Recherche bis zum finalen UI — durchdachte, schöne Interfaces,
+          die Nutzer lieben und Conversions steigern.
+        </p>
+        <div class="svc-meta">UX · UI · Prototyping</div>
+      </article>
 
-      <div class="projects-grid">
-        <!-- Project 1 -->
-        <div class="proj-card glass-card reveal">
-          <div class="proj-header">
-            <div class="proj-dots"><span></span><span></span><span></span></div>
-            <div class="proj-links">
-              <a href="#" aria-label="GitHub">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-              </a>
-              <a href="#" aria-label="Live Demo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              </a>
-            </div>
-          </div>
-          <div class="proj-preview preview-1">
-            <div class="preview-bars">
-              <span></span><span></span><span class="short"></span><span></span>
-            </div>
-            <div class="preview-blocks">
-              <div class="pb pb-primary"></div>
-              <div class="pb pb-secondary"></div>
-            </div>
-          </div>
-          <div class="proj-body">
-            <span class="proj-num">01</span>
-            <h3>Distributed Event System</h3>
-            <p>Hochleistungs-Event-Streaming-Plattform mit Echtzeit-Verarbeitung — gebaut für Millionen von Events pro Sekunde.</p>
-            <div class="proj-tech"><span>Go</span><span>Kafka</span><span>Redis</span><span>K8s</span></div>
-          </div>
-        </div>
+      <article class="svc-row" data-reveal data-cursor="hover">
+        <div class="svc-num">02</div>
+        <h3 class="svc-name">Web Development</h3>
+        <p class="svc-text">
+          Pixel-perfekte Umsetzung mit modernem Stack. Schnell, zugänglich,
+          SEO-optimiert und wartbar gebaut.
+        </p>
+        <div class="svc-meta">React · Next.js · TS</div>
+      </article>
 
-        <!-- Project 2 – featured -->
-        <div class="proj-card glass-card reveal proj-featured">
-          <div class="proj-badge">Featured</div>
-          <div class="proj-header">
-            <div class="proj-dots"><span></span><span></span><span></span></div>
-            <div class="proj-links">
-              <a href="#" aria-label="GitHub">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-              </a>
-              <a href="#" aria-label="Live Demo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              </a>
-            </div>
-          </div>
-          <div class="proj-preview preview-2">
-            <div class="ai-lines">
-              <div class="al"></div><div class="al short"></div>
-              <div class="al medium"></div><div class="al"></div>
-            </div>
-          </div>
-          <div class="proj-body">
-            <span class="proj-num">02</span>
-            <h3>AI-Powered Dev Assistant</h3>
-            <p>Intelligenter Entwicklungsassistent der Codereviews automatisiert, Bugs erkennt und komplexe Refactorings vorschlägt.</p>
-            <div class="proj-tech"><span>Python</span><span>LLMs</span><span>FastAPI</span><span>React</span></div>
-          </div>
-        </div>
+      <article class="svc-row" data-reveal data-cursor="hover">
+        <div class="svc-num">03</div>
+        <h3 class="svc-name">Brand &amp; Identity</h3>
+        <p class="svc-text">
+          Visuelle Identitäten mit Charakter — Logo, Typografie, Farbwelt und
+          ein konsistentes System für jeden Touchpoint.
+        </p>
+        <div class="svc-meta">Identity · Guidelines</div>
+      </article>
 
-        <!-- Project 3 -->
-        <div class="proj-card glass-card reveal">
-          <div class="proj-header">
-            <div class="proj-dots"><span></span><span></span><span></span></div>
-            <div class="proj-links">
-              <a href="#" aria-label="GitHub">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-              </a>
-              <a href="#" aria-label="Live Demo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              </a>
-            </div>
-          </div>
-          <div class="proj-preview preview-3">
-            <svg class="node-svg" viewBox="0 0 200 130">
-              <line x1="100" y1="65" x2="35" y2="25"  stroke="rgba(129,140,248,.5)" stroke-width="1.5"/>
-              <line x1="100" y1="65" x2="165" y2="25" stroke="rgba(34,211,238,.5)"  stroke-width="1.5"/>
-              <line x1="100" y1="65" x2="100" y2="110" stroke="rgba(244,114,182,.5)" stroke-width="1.5"/>
-              <circle cx="100" cy="65"  r="8" fill="rgba(129,140,248,.8)"/>
-              <circle cx="35"  cy="25"  r="5" fill="rgba(34,211,238,.7)"/>
-              <circle cx="165" cy="25"  r="5" fill="rgba(34,211,238,.7)"/>
-              <circle cx="100" cy="110" r="5" fill="rgba(244,114,182,.7)"/>
-            </svg>
-          </div>
-          <div class="proj-body">
-            <span class="proj-num">03</span>
-            <h3>Real-Time Collab Hub</h3>
-            <p>Echtzeit-Kollaborationsplattform mit konfliktfreier CRDT-Synchronisation für verteilte, asynchrone Teams.</p>
-            <div class="proj-tech"><span>TypeScript</span><span>WebSockets</span><span>CRDT</span><span>React</span></div>
-          </div>
-        </div>
-      </div>
+      <article class="svc-row" data-reveal data-cursor="hover">
+        <div class="svc-num">04</div>
+        <h3 class="svc-name">Design Systems</h3>
+        <p class="svc-text">
+          Skalierbare Komponenten-Bibliotheken, die Design und Code in Einklang
+          bringen und Teams schneller machen.
+        </p>
+        <div class="svc-meta">Components · Tokens</div>
+      </article>
     </div>
   </section>
 
   <!-- ===== CONTACT ===== -->
-  <section id="contact" class="section contact-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">// Get In Touch</span>
-        <h2 class="section-title">Let's Build Something <span class="text-gradient">Extraordinary</span></h2>
-      </div>
+  <section class="section contact" id="contact">
+    <div class="contact-glow" aria-hidden="true"></div>
+    <div class="contact-inner">
+      <span class="eyebrow" data-reveal>Contact</span>
+      <h2 class="contact-title" data-reveal>
+        Lass uns etwas<br /><em>Außergewöhnliches</em> bauen.
+      </h2>
+      <p class="contact-lead" data-reveal>
+        Hast du ein Projekt im Kopf? Ich nehme aktuell neue Kunden an.
+        Schreib mir — ich melde mich innerhalb von 24 Stunden.
+      </p>
 
-      <div class="contact-grid">
-        <div class="contact-info reveal">
-          <p class="contact-intro">
-            Haben Sie ein komplexes Projekt oder eine technische Herausforderung?
-            Ich freue mich auf spannende Zusammenarbeit — ob kurzfristig oder langfristig.
-          </p>
-
-          <div class="contact-items">
-            <a href="mailto:fxshr@yahoo.com" class="contact-item">
-              <div class="ci-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              </div>
-              <div>
-                <span class="ci-label">Email</span>
-                <span class="ci-value">fxshr@yahoo.com</span>
-              </div>
-            </a>
-            <a href="https://github.com/fxshr29" class="contact-item" target="_blank" rel="noopener">
-              <div class="ci-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-              </div>
-              <div>
-                <span class="ci-label">GitHub</span>
-                <span class="ci-value">fxshr29</span>
-              </div>
-            </a>
+      <form class="contact-form" id="contactForm" data-reveal>
+        <div class="cf-row">
+          <div class="cf-group">
+            <input type="text" id="cf-name" name="name" placeholder=" " required />
+            <label for="cf-name">Dein Name</label>
           </div>
-
-          <div class="avail-badge">
-            <span class="avail-dot"></span>
-            Available for new projects
+          <div class="cf-group">
+            <input type="email" id="cf-email" name="email" placeholder=" " required />
+            <label for="cf-email">Email</label>
           </div>
         </div>
-
-        <div class="contact-form-col reveal">
-          <form class="contact-form glass-card" id="contactForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Max Mustermann" required />
-              </div>
-              <div class="form-group">
-                <label for="email-inp">Email</label>
-                <input type="email" id="email-inp" name="email" placeholder="max@example.com" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="subject">Betreff</label>
-              <input type="text" id="subject" name="subject" placeholder="Projekt-Anfrage / Kollaboration" required />
-            </div>
-            <div class="form-group">
-              <label for="message">Nachricht</label>
-              <textarea id="message" name="message" rows="5" placeholder="Beschreiben Sie Ihr Projekt oder Ihre Herausforderung…" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">
-              <span>Nachricht senden</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-            <div class="form-success" id="formSuccess">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              Nachricht gesendet! Ich melde mich bald.
-            </div>
-          </form>
+        <div class="cf-group">
+          <input type="text" id="cf-subject" name="subject" placeholder=" " required />
+          <label for="cf-subject">Worum geht es?</label>
         </div>
+        <div class="cf-group">
+          <textarea id="cf-message" name="message" rows="4" placeholder=" " required></textarea>
+          <label for="cf-message">Erzähl mir von deinem Projekt</label>
+        </div>
+        <button type="submit" class="btn btn-light btn-block magnetic" data-cursor="hover">
+          <span>Nachricht senden</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <p class="cf-success" id="cfSuccess">
+          ✓ Danke! Deine Nachricht ist unterwegs — ich melde mich bald.
+        </p>
+      </form>
+
+      <div class="contact-alt" data-reveal>
+        <span>Oder direkt:</span>
+        <a href="mailto:fxshr@yahoo.com" data-cursor="hover">fxshr@yahoo.com</a>
       </div>
     </div>
   </section>
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          <span class="logo-fx">FX</span><span class="logo-shr">SHR</span>
-        </div>
-        <p class="footer-motto">Built with passion for technology & complex collaboration.</p>
-        <nav class="footer-nav">
-          <a href="#about">About</a>
-          <a href="#skills">Skills</a>
-          <a href="#projects">Projects</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <div class="footer-bottom">
-          <span>© 2026 FXSHR. All rights reserved.</span>
-          <span>Made with <span class="heart">♥</span> &amp; TypeScript</span>
-        </div>
+    <div class="footer-top">
+      <div class="footer-brand">Felix<span class="brand-dot">.</span></div>
+      <p class="footer-tagline">Designer &amp; Developer für<br />digitale Produkte, die herausragen.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <span class="fc-head">Menu</span>
+        <a href="#work" data-cursor="hover">Work</a>
+        <a href="#about" data-cursor="hover">About</a>
+        <a href="#services" data-cursor="hover">Services</a>
+        <a href="#contact" data-cursor="hover">Contact</a>
       </div>
+      <div class="footer-col">
+        <span class="fc-head">Social</span>
+        <a href="#" data-cursor="hover">Dribbble</a>
+        <a href="#" data-cursor="hover">Behance</a>
+        <a href="https://github.com/fxshr29" data-cursor="hover">GitHub</a>
+        <a href="#" data-cursor="hover">LinkedIn</a>
+      </div>
+      <div class="footer-col">
+        <span class="fc-head">Contact</span>
+        <a href="mailto:fxshr@yahoo.com" data-cursor="hover">fxshr@yahoo.com</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Felix — All rights reserved.</span>
+      <span>Designed &amp; developed with care.</span>
     </div>
   </footer>
 
