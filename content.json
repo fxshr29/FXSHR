@@ -1,0 +1,171 @@
+{
+  "hero": {
+    "tagline": "Freelance Designer & Developer",
+    "lines": [
+      "Ich gestalte",
+      "<em>digitale</em> Produkte,",
+      "die <em>herausragen</em>",
+      "&amp; performen."
+    ],
+    "lead": "Felix — Designer & Developer an der Schnittstelle von Ästhetik und Technik. Ich verwandle ambitionierte Ideen in Produkte, die sich premium anfühlen und messbar wirken.",
+    "ctaPrimary": "Projekt starten",
+    "ctaSecondary": "Arbeiten ansehen"
+  },
+  "marquee": [
+    "Product Design",
+    "Web Development",
+    "Brand Identity",
+    "Design Systems",
+    "Motion"
+  ],
+  "work": [
+    {
+      "title": "Lumen Finance",
+      "desc": "Banking-Plattform · Product Design & Frontend",
+      "tags": ["UX/UI", "React", "Design System"],
+      "year": "2025"
+    },
+    {
+      "title": "Atelier Nord",
+      "desc": "Brand & Editorial Website · Designstudio",
+      "tags": ["Branding", "Webflow", "Motion"],
+      "year": "2025"
+    },
+    {
+      "title": "Pulse Health",
+      "desc": "Health-Tech App · End-to-End Produkt",
+      "tags": ["Product", "iOS", "Prototyping"],
+      "year": "2024"
+    },
+    {
+      "title": "Vertex SaaS",
+      "desc": "B2B Dashboard · Design & Development",
+      "tags": ["SaaS", "TypeScript", "Data Viz"],
+      "year": "2024"
+    }
+  ],
+  "about": {
+    "statement": "Ich bin Felix — <em>Designer &amp; Developer</em>, der die seltene Kombination aus gestalterischem Auge und technischer Tiefe vereint. Statt Entwürfe an andere zu übergeben, gestalte und baue ich selbst — vom ersten Pixel bis zur produktiven Anwendung.",
+    "text": "Mein Ansatz ist minimalistisch und kompromisslos. Jedes Detail hat einen Grund, jede Animation einen Zweck. Ich arbeite eng mit Gründern und Teams zusammen, die wissen, dass exzellentes Design kein Nice-to-have ist, sondern ein Wettbewerbsvorteil.",
+    "facts": [
+      { "n": 8,  "label": "Jahre Erfahrung" },
+      { "n": 60, "label": "Projekte geliefert" },
+      { "n": 40, "label": "Zufriedene Kunden" }
+    ],
+    "design": [
+      "Product & UI/UX Design",
+      "Design Systems",
+      "Brand Identity",
+      "Prototyping & Motion"
+    ],
+    "development": [
+      "React & Next.js",
+      "TypeScript",
+      "Webflow & Framer",
+      "Performance & SEO"
+    ]
+  },
+  "services": [
+    {
+      "name": "Product Design",
+      "text": "Von der Recherche bis zum finalen UI — durchdachte, schöne Interfaces, die Nutzer lieben und Conversions steigern.",
+      "meta": "UX · UI · Prototyping"
+    },
+    {
+      "name": "Web Development",
+      "text": "Pixel-perfekte Umsetzung mit modernem Stack. Schnell, zugänglich, SEO-optimiert und wartbar gebaut.",
+      "meta": "React · Next.js · TS"
+    },
+    {
+      "name": "Brand & Identity",
+      "text": "Visuelle Identitäten mit Charakter — Logo, Typografie, Farbwelt und ein konsistentes System für jeden Touchpoint.",
+      "meta": "Identity · Guidelines"
+    },
+    {
+      "name": "Design Systems",
+      "text": "Skalierbare Komponenten-Bibliotheken, die Design und Code in Einklang bringen und Teams schneller machen.",
+      "meta": "Components · Tokens"
+    }
+  ],
+  "pricing": {
+    "lead": "Keine versteckten Kosten. Keine Überraschungen. Nur klare Pakete, die liefern was sie versprechen.",
+    "note": "Alle Preise zzgl. MwSt. · Individuelle Anfragen willkommen",
+    "plans": [
+      {
+        "tier": "Starter",
+        "price": "1.500",
+        "plus": false,
+        "featured": false,
+        "tagline": "Perfekt für den ersten starken Auftritt.",
+        "features": [
+          { "text": "Landing Page / One-Pager", "included": true },
+          { "text": "Mobile-First Responsive", "included": true },
+          { "text": "2 Revisionsrunden", "included": true },
+          { "text": "SEO Grundoptimierung", "included": true },
+          { "text": "Performance-Setup", "included": true },
+          { "text": "Design System", "included": false },
+          { "text": "CMS Integration", "included": false },
+          { "text": "Support inklusive", "included": false }
+        ],
+        "time": "1–2 Wochen",
+        "best": "Solopreneure & Kleinbetriebe",
+        "cta": "Projekt starten"
+      },
+      {
+        "tier": "Studio",
+        "price": "4.800",
+        "plus": false,
+        "featured": true,
+        "badge": "Beliebteste Wahl",
+        "tagline": "Die Komplettlösung für professionelle Marken.",
+        "features": [
+          { "text": "Website bis 8 Seiten", "included": true },
+          { "text": "UI/UX Design + Development", "included": true },
+          { "text": "Design System (Basis)", "included": true },
+          { "text": "4 Revisionsrunden", "included": true },
+          { "text": "SEO + Performance-Optimierung", "included": true },
+          { "text": "CMS Integration", "included": true },
+          { "text": "Animationen & Micro-Interactions", "included": true },
+          { "text": "30 Tage Support", "included": true }
+        ],
+        "time": "3–5 Wochen",
+        "best": "Startups & Agenturen",
+        "cta": "Projekt starten"
+      },
+      {
+        "tier": "Scale",
+        "price": "9.500",
+        "plus": true,
+        "featured": false,
+        "tagline": "Für komplexe Produkte ohne Kompromisse.",
+        "features": [
+          { "text": "Full Product Design & Dev", "included": true },
+          { "text": "Custom Design System", "included": true },
+          { "text": "Unbegrenzte Revisionen", "included": true },
+          { "text": "KI & Komplexe Integrationen", "included": true },
+          { "text": "Tech Consulting inklusive", "included": true },
+          { "text": "Priorisierter Support", "included": true },
+          { "text": "3 Monate Wartung", "included": true },
+          { "text": "Dedizierte Zusammenarbeit", "included": true }
+        ],
+        "time": "Individuell",
+        "best": "Scale-ups & komplexe Produkte",
+        "cta": "Anfrage senden"
+      }
+    ]
+  },
+  "contact": {
+    "title": "Lass uns etwas<br /><em>Außergewöhnliches</em> bauen.",
+    "lead": "Hast du ein Projekt im Kopf? Ich nehme aktuell neue Kunden an. Schreib mir — ich melde mich innerhalb von 24 Stunden.",
+    "email": "fxshr@yahoo.com"
+  },
+  "footer": {
+    "tagline": "Designer & Developer für<br />digitale Produkte, die herausragen.",
+    "socials": [
+      { "label": "Dribbble", "url": "#" },
+      { "label": "Behance", "url": "#" },
+      { "label": "GitHub", "url": "https://github.com/fxshr29" },
+      { "label": "LinkedIn", "url": "#" }
+    ]
+  }
+}
