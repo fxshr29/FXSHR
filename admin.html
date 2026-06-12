@@ -5,29 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>CMS — Felix Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #08080a; --surface: rgba(255,255,255,.03); --surface-2: rgba(255,255,255,.055);
+      --bg: #08080a; --bg-1: #101014; --surface: rgba(255,255,255,.03); --surface-2: rgba(255,255,255,.055);
       --border: rgba(255,255,255,.09); --border-2: rgba(255,255,255,.18);
       --text: #f4f4f1; --muted: #86868b; --muted-2: #56565c;
       --accent: #c8b9ff; --green: #6ee7a8; --red: #f87171;
       --sans: 'Inter', sans-serif; --serif: 'Instrument Serif', serif; --mono: 'JetBrains Mono', monospace;
       --ease: cubic-bezier(.22,1,.36,1);
     }
+    html { -webkit-font-smoothing: antialiased; }
     body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.5; }
-    a { color: inherit; }
+    a { color: inherit; text-decoration: none; }
 
+    /* ====== AUTH WALL ====== */
+    #authWall {
+      position: fixed; inset: 0; z-index: 9000;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      transition: opacity .5s var(--ease), visibility .5s var(--ease);
+    }
+    #authWall.done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .auth-panel {
+      width: 100%; max-width: 400px;
+      display: flex; flex-direction: column; gap: 28px;
+    }
+    .auth-screen { display: none; flex-direction: column; gap: 24px; animation: authIn .6s var(--ease); }
+    .auth-screen.active { display: flex; }
+    @keyframes authIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-logo {
+      font-family: var(--serif); font-size: 2rem;
+      margin-bottom: 4px;
+    }
+    .auth-logo em { font-style: italic; color: var(--accent); }
+    .auth-eyebrow {
+      font-family: var(--mono); font-size: .7rem;
+      text-transform: uppercase; letter-spacing: .14em; color: var(--muted-2);
+      margin-bottom: 2px;
+    }
+    .auth-title { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; }
+    .auth-sub { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+    .auth-sub strong { color: var(--text); }
+
+    .af { position: relative; margin-bottom: 0; }
+    .af input, .af select {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; color: var(--text);
+      font-family: var(--sans); font-size: .95rem; outline: none;
+      transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+    }
+    .af input:focus, .af select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,185,255,.12);
+    }
+    .af input::placeholder { color: var(--muted-2); }
+    .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .auth-fields { display: flex; flex-direction: column; gap: 12px; }
+
+    .otp-input-wrap { display: flex; justify-content: center; }
+    .otp-input {
+      font-family: var(--mono) !important; font-size: 2rem !important;
+      letter-spacing: .5em; text-align: center;
+      width: 220px !important; padding: 16px 12px !important;
+    }
+
+    .auth-btn {
+      width: 100%; padding: 15px; border-radius: 50px; border: none; cursor: pointer;
+      font-family: var(--sans); font-size: .92rem; font-weight: 500;
+      background: var(--text); color: var(--bg);
+      transition: all .3s var(--ease);
+    }
+    .auth-btn:hover { background: #fff; }
+    .auth-btn:disabled { opacity: .5; cursor: wait; }
+
+    .auth-btn-ghost {
+      width: 100%; padding: 12px; border-radius: 50px;
+      border: 1px solid var(--border); background: none; cursor: pointer;
+      font-family: var(--sans); font-size: .85rem; color: var(--muted);
+      transition: all .3s var(--ease);
+    }
+    .auth-btn-ghost:hover { border-color: var(--border-2); color: var(--text); }
+
+    .auth-error {
+      font-family: var(--mono); font-size: .75rem; color: var(--red);
+      min-height: 20px; text-align: center;
+    }
+    .auth-hint {
+      font-size: .8rem; color: var(--muted-2); text-align: center; line-height: 1.6;
+    }
+    .auth-hint a { color: var(--accent); }
+
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--mono); font-size: .68rem; color: var(--muted-2);
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .otp-timer {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: var(--mono); font-size: .75rem; color: var(--muted-2);
+    }
+    .otp-timer-bar {
+      width: 80px; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+    .otp-timer-fill {
+      height: 100%; background: var(--accent); border-radius: 2px;
+      transition: width 1s linear;
+    }
+    .otp-fallback {
+      font-family: var(--mono); font-size: 1.4rem; color: var(--accent);
+      text-align: center; letter-spacing: .3em;
+      padding: 16px; background: var(--surface-2); border-radius: 12px;
+      border: 1px solid rgba(200,185,255,.25);
+    }
+    .setup-section {
+      padding: 18px; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--surface); display: flex; flex-direction: column; gap: 12px;
+    }
+    .setup-section h4 { font-size: .82rem; font-weight: 600; }
+    .setup-section p { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+    .setup-optional {
+      border: 1px dashed var(--border); border-radius: 12px; padding: 18px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .badge-optional {
+      display: inline-block; font-family: var(--mono); font-size: .64rem;
+      text-transform: uppercase; letter-spacing: .1em;
+      padding: 2px 8px; border-radius: 50px; border: 1px solid var(--border);
+      color: var(--muted-2); margin-bottom: 4px;
+    }
+    .lock-info {
+      text-align: center; padding: 24px; background: var(--surface-2);
+      border-radius: 12px; border: 1px solid rgba(248,113,113,.2);
+    }
+    .lock-info .lock-icon { font-size: 2rem; margin-bottom: 12px; }
+    .lock-info p { color: var(--muted); font-size: .88rem; }
+    .lock-countdown { font-family: var(--mono); font-size: 1.4rem; color: var(--red); margin: 8px 0; }
+
+    /* ====== TOPBAR ====== */
     .topbar {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       padding: 16px clamp(18px, 4vw, 40px);
       background: rgba(8,8,10,.8); backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
     }
     .tb-brand { font-family: var(--serif); font-size: 1.4rem; }
     .tb-brand em { color: var(--accent); font-style: italic; }
@@ -44,6 +179,7 @@
     .btn-line:hover { border-color: var(--text); }
     .btn:disabled { opacity: .5; cursor: wait; }
 
+    /* ====== EDITOR ====== */
     .wrap { max-width: 880px; margin: 0 auto; padding: clamp(28px, 5vw, 56px) clamp(18px, 4vw, 40px) 120px; }
     .intro { margin-bottom: 40px; }
     .intro h1 { font-family: var(--serif); font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 400; letter-spacing: -.02em; }
@@ -83,7 +219,6 @@
     .item {
       border: 1px solid var(--border); border-radius: 14px;
       padding: 18px; margin-bottom: 14px; background: rgba(255,255,255,.015);
-      position: relative;
     }
     .item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .item-title { font-family: var(--mono); font-size: .72rem; color: var(--accent); letter-spacing: .08em; }
@@ -104,16 +239,14 @@
       position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 120px);
       background: var(--text); color: var(--bg); padding: 13px 24px; border-radius: 50px;
       font-size: .88rem; font-weight: 500; z-index: 200;
-      transition: transform .45s var(--ease);
-      max-width: calc(100vw - 40px);
+      transition: transform .45s var(--ease); max-width: calc(100vw - 40px);
     }
     .toast.show { transform: translate(-50%, 0); }
     .toast.err { background: var(--red); color: #fff; }
 
     dialog {
       background: #101013; color: var(--text); border: 1px solid var(--border-2);
-      border-radius: 18px; padding: 28px; max-width: 460px; width: calc(100vw - 40px);
-      margin: auto;
+      border-radius: 18px; padding: 28px; max-width: 460px; width: calc(100vw - 40px); margin: auto;
     }
     dialog::backdrop { background: rgba(0,0,0,.7); backdrop-filter: blur(6px); }
     dialog h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 10px; }
@@ -124,11 +257,113 @@
 </head>
 <body>
 
+<!-- ===== AUTH WALL ===== -->
+<div id="authWall">
+  <div class="auth-panel">
+
+    <!-- Screen: SETUP (first run) -->
+    <div class="auth-screen" id="screenSetup">
+      <div>
+        <div class="auth-logo">Felix <em>Admin</em></div>
+        <div class="auth-eyebrow">Ersteinrichtung</div>
+      </div>
+      <div>
+        <div class="auth-title">Admin einrichten</div>
+        <div class="auth-sub" style="margin-top:8px">Wähle ein sicheres Passwort und gib deine E-Mail für Bestätigungscodes ein. Diese Daten bleiben <strong>nur auf diesem Gerät</strong>.</div>
+      </div>
+      <div class="auth-fields">
+        <div class="af"><input type="password" id="setupPwd" placeholder="Passwort (min. 8 Zeichen)" autocomplete="new-password" /></div>
+        <div class="af"><input type="password" id="setupPwd2" placeholder="Passwort bestätigen" autocomplete="new-password" /></div>
+        <div class="af"><input type="email" id="setupEmail" placeholder="E-Mail für Bestätigungscodes" /></div>
+      </div>
+      <div class="auth-divider">EmailJS — E-Mail-Versand (empfohlen)</div>
+      <div class="setup-optional">
+        <div class="badge-optional">Optional · Kostenlos einrichten</div>
+        <div class="auth-sub">
+          Ohne EmailJS wird der Code auf dem Bildschirm angezeigt statt per E-Mail gesendet.
+          Einrichten: <a href="https://emailjs.com" target="_blank" rel="noopener">emailjs.com</a> →
+          Email Services → Template mit <code>{{code}}</code> und <code>{{to_email}}</code>.
+        </div>
+        <div class="af"><input type="text" id="setupEjsPk" placeholder="EmailJS Public Key" /></div>
+        <div class="af-row">
+          <div class="af"><input type="text" id="setupEjsSvc" placeholder="Service ID" /></div>
+          <div class="af"><input type="text" id="setupEjsTpl" placeholder="Template ID" /></div>
+        </div>
+      </div>
+      <div class="auth-error" id="setupError"></div>
+      <button class="auth-btn" id="setupSubmit">Einrichten &amp; starten →</button>
+    </div>
+
+    <!-- Screen: PASSWORD -->
+    <div class="auth-screen" id="screenPwd">
+      <div>
+        <div class="auth-logo">Felix <em>Admin</em></div>
+        <div class="auth-eyebrow">Sicherheitsbereich</div>
+      </div>
+      <div class="auth-title">Willkommen zurück</div>
+      <div class="auth-fields">
+        <div class="af"><input type="password" id="pwdInput" placeholder="Passwort" autocomplete="current-password" /></div>
+      </div>
+      <div class="auth-error" id="pwdError"></div>
+      <button class="auth-btn" id="pwdSubmit">Weiter →</button>
+      <div class="auth-hint">
+        <a href="#" id="resetLink">Passwort vergessen?</a>
+      </div>
+    </div>
+
+    <!-- Screen: OTP -->
+    <div class="auth-screen" id="screenOtp">
+      <div>
+        <div class="auth-logo">Felix <em>Admin</em></div>
+        <div class="auth-eyebrow">Zwei-Faktor-Bestätigung</div>
+      </div>
+      <div>
+        <div class="auth-title">Code bestätigen</div>
+        <div class="auth-sub" id="otpDesc" style="margin-top:8px"></div>
+      </div>
+      <div id="otpFallbackWrap" style="display:none">
+        <div class="auth-sub" style="margin-bottom:8px;color:var(--muted-2)">EmailJS nicht konfiguriert — dein Code:</div>
+        <div class="otp-fallback" id="otpFallbackCode"></div>
+      </div>
+      <div class="otp-input-wrap">
+        <div class="af"><input type="text" id="otpInput" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" /></div>
+      </div>
+      <div class="otp-timer">
+        <span id="otpTimerLabel">5:00</span>
+        <div class="otp-timer-bar"><div class="otp-timer-fill" id="otpTimerFill" style="width:100%"></div></div>
+        <span>verbleibend</span>
+      </div>
+      <div class="auth-error" id="otpError"></div>
+      <button class="auth-btn" id="otpSubmit">Bestätigen →</button>
+      <button class="auth-btn-ghost" id="otpResend">Code erneut senden</button>
+      <button class="auth-btn-ghost" id="otpBack">← Zurück</button>
+    </div>
+
+    <!-- Screen: LOCKED -->
+    <div class="auth-screen" id="screenLocked">
+      <div>
+        <div class="auth-logo">Felix <em>Admin</em></div>
+      </div>
+      <div class="lock-info">
+        <div class="lock-icon">🔒</div>
+        <p>Zu viele fehlgeschlagene Versuche.</p>
+        <div class="lock-countdown" id="lockCountdown">15:00</div>
+        <p>Bitte warte, bis die Sperre aufgehoben wird.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CMS APP (initially hidden, shown after auth) ===== -->
+<div id="cmsApp" style="visibility:hidden">
+
   <header class="topbar">
     <div class="tb-brand">Felix <em>CMS</em></div>
     <div class="tb-actions">
       <a class="btn btn-line" href="index.html">← Zur Website</a>
       <button class="btn btn-line" id="btnDownload">JSON herunterladen</button>
+      <button class="btn btn-line" id="btnLogout">Abmelden</button>
       <button class="btn btn-light" id="btnPublish">Veröffentlichen</button>
     </div>
   </header>
@@ -136,329 +371,508 @@
   <main class="wrap">
     <div class="intro">
       <h1>Inhalte <em>bearbeiten</em></h1>
-      <p>
-        Alle Texte, Projekte, Services und Preise der Website. Änderungen mit
-        „Veröffentlichen" direkt auf GitHub speichern — die Seite aktualisiert
-        sich automatisch in ca. einer Minute.
-      </p>
+      <p>Alle Texte, Projekte, Services und Preise der Website. Änderungen mit „Veröffentlichen" direkt auf GitHub speichern.</p>
     </div>
-    <div id="editor"><!-- generated --></div>
+    <div id="editor"></div>
   </main>
 
-  <div class="toast" id="toast"></div>
+</div>
 
-  <dialog id="tokenDialog">
-    <h3>GitHub Token</h3>
-    <p>
-      Zum Veröffentlichen wird ein GitHub Personal Access Token mit
-      <strong>repo</strong>-Rechten (Contents: Read &amp; Write für
-      <code>fxshr29/FXSHR</code>) benötigt. Es wird nur lokal in diesem Browser
-      gespeichert. Erstellen unter: GitHub → Settings → Developer settings →
-      Fine-grained tokens.
-    </p>
-    <div class="f">
-      <label for="tokenInput">Personal Access Token</label>
-      <input type="password" id="tokenInput" placeholder="github_pat_…" autocomplete="off" />
-    </div>
-    <div class="dlg-actions">
-      <button class="btn btn-line" id="tokenCancel">Abbrechen</button>
-      <button class="btn btn-light" id="tokenSave">Speichern &amp; veröffentlichen</button>
-    </div>
-  </dialog>
+<div class="toast" id="toast"></div>
+
+<dialog id="tokenDialog">
+  <h3>GitHub Token</h3>
+  <p>Personal Access Token mit <strong>Contents: Read &amp; Write</strong> für <code>fxshr29/FXSHR</code>. Erstellen unter: GitHub → Settings → Developer settings → Fine-grained tokens.</p>
+  <div class="f">
+    <label for="tokenInput">Personal Access Token</label>
+    <input type="password" id="tokenInput" placeholder="github_pat_…" autocomplete="off" />
+  </div>
+  <div class="dlg-actions">
+    <button class="btn btn-line" id="tokenCancel">Abbrechen</button>
+    <button class="btn btn-light" id="tokenSave">Speichern &amp; veröffentlichen</button>
+  </div>
+</dialog>
+
+<dialog id="resetDialog">
+  <h3>Passwort zurücksetzen</h3>
+  <p>Um den Admin zurückzusetzen, öffne die Browser-Konsole und führe folgenden Befehl aus:</p>
+  <pre style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:.8rem;color:var(--accent);margin-bottom:16px;overflow:auto">['cms_setup_done','cms_pwd_hash','cms_otp_email',
+ 'cms_ejs_pk','cms_ejs_svc','cms_ejs_tpl']
+.forEach(k => localStorage.removeItem(k))</pre>
+  <p style="font-size:.82rem;color:var(--muted)">Dann diese Seite neu laden — der Setup-Assistent startet erneut.</p>
+  <div class="dlg-actions">
+    <button class="btn btn-light" id="resetClose">Verstanden</button>
+  </div>
+</dialog>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+
+/* =====================================================
+   SECURITY LAYER
+   ===================================================== */
+const K = {
+  setup:    'cms_setup_done',
+  hash:     'cms_pwd_hash',
+  email:    'cms_otp_email',
+  ejsPk:    'cms_ejs_pk',
+  ejsSvc:   'cms_ejs_svc',
+  ejsTpl:   'cms_ejs_tpl',
+  fails:    'cms_fails',
+  lock:     'cms_lock',
+  session:  'cms_session',
+  otp:      'cms_otp',
+};
+const FAIL_MAX = 5, LOCK_MS = 15 * 60 * 1000, SESSION_MS = 8 * 3600 * 1000, OTP_MS = 5 * 60 * 1000;
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function genOtp() {
+  return String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, '0');
+}
+
+function storeOtp(code) {
+  sessionStorage.setItem(K.otp, JSON.stringify({ code, expires: Date.now() + OTP_MS }));
+}
+function checkOtp(input) {
+  try {
+    const { code, expires } = JSON.parse(sessionStorage.getItem(K.otp) || '{}');
+    return Date.now() < expires && input.trim() === code;
+  } catch { return false; }
+}
+
+function hasSession() {
+  try {
+    const { expires } = JSON.parse(sessionStorage.getItem(K.session) || '{}');
+    return Date.now() < expires;
+  } catch { return false; }
+}
+function createSession() {
+  const tok = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  sessionStorage.setItem(K.session, JSON.stringify({ tok, expires: Date.now() + SESSION_MS }));
+}
+function clearSession() {
+  sessionStorage.removeItem(K.session);
+  sessionStorage.removeItem(K.otp);
+}
+
+function isLocked() {
+  const t = localStorage.getItem(K.lock);
+  return t && Date.now() < +t;
+}
+function incFails() {
+  const n = (+localStorage.getItem(K.fails) || 0) + 1;
+  localStorage.setItem(K.fails, n);
+  if (n >= FAIL_MAX) {
+    localStorage.setItem(K.lock, Date.now() + LOCK_MS);
+    localStorage.setItem(K.fails, 0);
+    return true;
+  }
+  return false;
+}
+function clearFails() { localStorage.removeItem(K.fails); }
+
+function maskEmail(e) {
+  const [u, d] = e.split('@');
+  return u.slice(0,2) + '***@' + d;
+}
+
+async function sendOtp(code) {
+  const pk  = localStorage.getItem(K.ejsPk);
+  const svc = localStorage.getItem(K.ejsSvc);
+  const tpl = localStorage.getItem(K.ejsTpl);
+  const to  = localStorage.getItem(K.email);
+  if (!pk || !svc || !tpl || !to) return false;
+  try {
+    emailjs.init(pk);
+    await emailjs.send(svc, tpl, { to_email: to, to_name: 'Felix', code, expires: '5 Minuten' });
+    return true;
+  } catch (e) { console.warn('EmailJS:', e); return false; }
+}
+
+/* ====== SCREEN ROUTER ====== */
+let currentScreen = null;
+function show(id) {
+  if (currentScreen) currentScreen.classList.remove('active');
+  currentScreen = document.getElementById(id);
+  currentScreen.classList.add('active');
+}
+
+function clearErr() {
+  ['setupError','pwdError','otpError'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '';
+  });
+}
+
+/* ====== SETUP SCREEN ====== */
+$('#setupSubmit').addEventListener('click', async () => {
+  clearErr();
+  const pwd   = $('#setupPwd').value.trim();
+  const pwd2  = $('#setupPwd2').value.trim();
+  const email = $('#setupEmail').value.trim();
+
+  if (pwd.length < 8)          { $('#setupError').textContent = 'Passwort muss mind. 8 Zeichen haben.'; return; }
+  if (pwd !== pwd2)            { $('#setupError').textContent = 'Passwörter stimmen nicht überein.'; return; }
+  if (!email.includes('@'))    { $('#setupError').textContent = 'Bitte gültige E-Mail eingeben.'; return; }
+
+  $('#setupSubmit').disabled = true;
+  $('#setupSubmit').textContent = 'Einrichten…';
+
+  const hash   = await sha256(pwd);
+  const ejsPk  = $('#setupEjsPk').value.trim();
+  const ejsSvc = $('#setupEjsSvc').value.trim();
+  const ejsTpl = $('#setupEjsTpl').value.trim();
+
+  localStorage.setItem(K.hash, hash);
+  localStorage.setItem(K.email, email);
+  localStorage.setItem(K.setup, '1');
+  if (ejsPk)  localStorage.setItem(K.ejsPk,  ejsPk);
+  if (ejsSvc) localStorage.setItem(K.ejsSvc, ejsSvc);
+  if (ejsTpl) localStorage.setItem(K.ejsTpl, ejsTpl);
+
+  const code = genOtp();
+  storeOtp(code);
+  const sent = await sendOtp(code);
+
+  $('#setupSubmit').disabled = false;
+  $('#setupSubmit').textContent = 'Einrichten & starten →';
+
+  enterOtpScreen(email, code, sent);
+});
+
+/* ====== PASSWORD SCREEN ====== */
+$('#pwdInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('#pwdSubmit').click(); });
+$('#pwdSubmit').addEventListener('click', async () => {
+  clearErr();
+  if (isLocked()) { show('screenLocked'); startLockCountdown(); return; }
+
+  const val = $('#pwdInput').value;
+  $('#pwdSubmit').disabled = true;
+  $('#pwdSubmit').textContent = '…';
+
+  const inputHash = await sha256(val);
+  const stored    = localStorage.getItem(K.hash);
+
+  $('#pwdSubmit').disabled = false;
+  $('#pwdSubmit').textContent = 'Weiter →';
+
+  if (inputHash !== stored) {
+    const locked = incFails();
+    if (locked) { show('screenLocked'); startLockCountdown(); return; }
+    const rem = FAIL_MAX - (+localStorage.getItem(K.fails) || 0);
+    $('#pwdError').textContent = `Falsches Passwort. Noch ${rem} Versuch${rem!==1?'e':''}.`;
+    return;
+  }
+
+  clearFails();
+  const email = localStorage.getItem(K.email);
+  const code  = genOtp();
+  storeOtp(code);
+  const sent  = await sendOtp(code);
+  enterOtpScreen(email, code, sent);
+});
+
+$('#resetLink').addEventListener('click', e => { e.preventDefault(); $('#resetDialog').showModal(); });
+$('#resetClose').addEventListener('click', () => $('#resetDialog').close());
+
+/* ====== OTP SCREEN ====== */
+let otpTimerIv = null;
+
+function enterOtpScreen(email, code, sent) {
+  show('screenOtp');
+  const desc = document.getElementById('otpDesc');
+  if (sent) {
+    desc.textContent = 'Ein 6-stelliger Code wurde an ' + maskEmail(email) + ' gesendet.';
+    $('#otpFallbackWrap').style.display = 'none';
+  } else {
+    desc.textContent = 'EmailJS nicht konfiguriert. Dein Code:';
+    $('#otpFallbackWrap').style.display = 'block';
+    $('#otpFallbackCode').textContent = code;
+  }
+  startOtpTimer();
+  setTimeout(() => $('#otpInput').focus(), 100);
+}
+
+function startOtpTimer() {
+  clearInterval(otpTimerIv);
+  const end  = Date.now() + OTP_MS;
+  const fill = document.getElementById('otpTimerFill');
+  const lbl  = document.getElementById('otpTimerLabel');
+  otpTimerIv = setInterval(() => {
+    const left = Math.max(0, end - Date.now());
+    const pct  = (left / OTP_MS) * 100;
+    fill.style.width = pct + '%';
+    const m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+    lbl.textContent = m + ':' + String(s).padStart(2,'0');
+    if (left <= 0) {
+      clearInterval(otpTimerIv);
+      $('#otpError').textContent = 'Code abgelaufen. Bitte erneut senden.';
+    }
+  }, 1000);
+}
+
+$('#otpInput').addEventListener('input', e => {
+  e.target.value = e.target.value.replace(/\D/g,'');
+  if (e.target.value.length === 6) $('#otpSubmit').click();
+});
+$('#otpSubmit').addEventListener('click', () => {
+  clearErr();
+  const input = $('#otpInput').value;
+  if (input.length < 6) { $('#otpError').textContent = 'Bitte 6-stelligen Code eingeben.'; return; }
+  if (!checkOtp(input)) { $('#otpError').textContent = 'Falscher Code oder abgelaufen.'; return; }
+  clearInterval(otpTimerIv);
+  createSession();
+  $('#authWall').classList.add('done');
+  $('#cmsApp').style.visibility = 'visible';
+  toast('✓ Angemeldet — Willkommen, Felix!');
+  initCms();
+});
+
+$('#otpResend').addEventListener('click', async () => {
+  const email = localStorage.getItem(K.email);
+  const code  = genOtp();
+  storeOtp(code);
+  const sent  = await sendOtp(code);
+  if (sent) {
+    toast('Code erneut gesendet an ' + maskEmail(email));
+    $('#otpFallbackWrap').style.display = 'none';
+  } else {
+    $('#otpFallbackCode').textContent = code;
+    $('#otpFallbackWrap').style.display = 'block';
+  }
+  startOtpTimer();
+  clearErr();
+  $('#otpInput').value = '';
+});
+
+$('#otpBack').addEventListener('click', () => {
+  clearInterval(otpTimerIv);
+  clearErr();
+  $('#pwdInput').value = '';
+  show('screenPwd');
+  setTimeout(() => $('#pwdInput').focus(), 100);
+});
+
+/* ====== LOCK COUNTDOWN ====== */
+function startLockCountdown() {
+  const el = document.getElementById('lockCountdown');
+  const until = +localStorage.getItem(K.lock);
+  const iv = setInterval(() => {
+    const left = Math.max(0, until - Date.now());
+    const m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+    el.textContent = m + ':' + String(s).padStart(2,'0');
+    if (left <= 0) {
+      clearInterval(iv);
+      localStorage.removeItem(K.lock);
+      show('screenPwd');
+      setTimeout(() => $('#pwdInput').focus(), 100);
+    }
+  }, 1000);
+}
+
+/* ====== BOOT AUTH ====== */
+(function bootAuth() {
+  if (hasSession()) {
+    $('#authWall').classList.add('done');
+    $('#cmsApp').style.visibility = 'visible';
+    initCms();
+    return;
+  }
+  if (isLocked()) { show('screenLocked'); startLockCountdown(); return; }
+  if (localStorage.getItem(K.setup)) { show('screenPwd'); setTimeout(() => $('#pwdInput').focus(), 100); }
+  else { show('screenSetup'); setTimeout(() => $('#setupPwd').focus(), 100); }
+})();
+
+/* =====================================================
+   CMS APP
+   ===================================================== */
+const $ = s => document.querySelector(s); // re-declare is fine (same function)
+</script>
 
 <script>
 'use strict';
 
-const OWNER = 'fxshr29', REPO = 'FXSHR', PATH = 'content.json', BRANCH = 'main';
-const $ = (s, c = document) => c.querySelector(s);
-
 let state = null;
+const q  = s => document.querySelector(s);
+const qq = s => Array.from(document.querySelectorAll(s));
 
-/* ---------- helpers ---------- */
-const get = (obj, path) => path.split('.').reduce((o, k) => o?.[/^\d+$/.test(k) ? +k : k], obj);
-const set = (obj, path, val) => {
-  const keys = path.split('.');
-  const last = keys.pop();
-  const target = keys.reduce((o, k) => o[/^\d+$/.test(k) ? +k : k], obj);
-  target[/^\d+$/.test(last) ? +last : last] = val;
+const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+const ICON_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+
+/* helpers */
+const getP = (obj, p) => p.split('.').reduce((o, k) => o?.[/^\d+$/.test(k) ? +k : k], obj);
+const setP = (obj, p, v) => {
+  const keys = p.split('.'); const last = keys.pop();
+  const t = keys.reduce((o, k) => o[/^\d+$/.test(k) ? +k : k], obj);
+  t[/^\d+$/.test(last) ? +last : last] = v;
 };
 
-function toast(msg, isErr = false) {
-  const t = $('#toast');
+function toast(msg, err = false) {
+  const t = q('#toast');
   t.textContent = msg;
-  t.classList.toggle('err', isErr);
+  t.classList.toggle('err', err);
   t.classList.add('show');
   clearTimeout(t._h);
   t._h = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-function field(label, path, { textarea = false, rows = 3, hint = '' } = {}) {
-  const val = get(state, path) ?? '';
-  const id = 'f_' + path.replace(/\./g, '_');
-  return `
-    <div class="f">
-      <label for="${id}">${label}</label>
-      ${textarea
-        ? `<textarea id="${id}" data-path="${path}" rows="${rows}">${String(val).replace(/</g, '&lt;')}</textarea>`
-        : `<input id="${id}" data-path="${path}" value="${String(val).replace(/"/g, '&quot;')}" />`}
-      ${hint ? `<div class="hint">${hint}</div>` : ''}
-    </div>`;
+function field(lbl, path, { ta = false, rows = 3, hint = '' } = {}) {
+  const val = getP(state, path) ?? '';
+  const id  = 'f_' + path.replace(/\./g,'_');
+  return `<div class="f"><label for="${id}">${lbl}</label>${
+    ta ? `<textarea id="${id}" data-path="${path}" rows="${rows}">${String(val).replace(/</g,'&lt;')}</textarea>`
+       : `<input id="${id}" data-path="${path}" value="${String(val).replace(/"/g,'&quot;')}" />`
+  }${hint ? `<div class="hint">${hint}</div>` : ''}</div>`;
+}
+function listField(lbl, path, hint = '') {
+  const val = (getP(state, path) || []).join('\n');
+  const id  = 'f_' + path.replace(/\./g,'_');
+  return `<div class="f"><label for="${id}">${lbl}</label><textarea id="${id}" data-path="${path}" data-list="1" rows="4">${val.replace(/</g,'&lt;')}</textarea>${hint ? `<div class="hint">${hint}</div>` : ''}</div>`;
+}
+function sec(key, title, body, openSet) {
+  const open = openSet.size ? openSet.has(key) : key === 'hero';
+  return `<div class="section${open?' open':''}" data-sec="${key}"><button class="sec-head" data-toggle="${key}">${title}<span class="chev">→</span></button><div class="sec-body">${body}</div></div>`;
 }
 
-function listField(label, path, { hint = '' } = {}) {
-  const val = (get(state, path) || []).join('\n');
-  const id = 'f_' + path.replace(/\./g, '_');
-  return `
-    <div class="f">
-      <label for="${id}">${label}</label>
-      <textarea id="${id}" data-path="${path}" data-list="1" rows="4">${val.replace(/</g, '&lt;')}</textarea>
-      <div class="hint">Eine Zeile pro Eintrag. ${hint}</div>
-    </div>`;
-}
-
-/* ---------- render ---------- */
 function render() {
-  const openSections = new Set(
-    [...document.querySelectorAll('.section.open')].map(s => s.dataset.sec)
-  );
-  $('#editor').innerHTML = `
-    ${section('hero', 'Hero', `
-      ${field('Tagline', 'hero.tagline')}
-      ${listField('Headline-Zeilen', 'hero.lines', { hint: 'HTML wie <em>…</em> erlaubt.' })}
-      ${field('Intro-Text', 'hero.lead', { textarea: true })}
-      <div class="row">
-        ${field('Button 1', 'hero.ctaPrimary')}
-        ${field('Button 2', 'hero.ctaSecondary')}
-      </div>
-    `, openSections)}
-
-    ${section('marquee', 'Laufband', listField('Begriffe', 'marquee'), openSections)}
-
-    ${section('work', 'Projekte', `
-      ${state.work.map((w, i) => `
-        <div class="item">
-          <div class="item-head">
-            <span class="item-title">PROJEKT ${String(i + 1).padStart(2, '0')}</span>
-            <button class="rm" data-rm="work.${i}">Entfernen</button>
-          </div>
-          <div class="row">
-            ${field('Titel', `work.${i}.title`)}
-            ${field('Jahr', `work.${i}.year`)}
-          </div>
-          ${field('Beschreibung', `work.${i}.desc`)}
-          ${listField('Tags', `work.${i}.tags`)}
-        </div>`).join('')}
-      <button class="add" data-add="work">+ Projekt hinzufügen</button>
-    `, openSections)}
-
-    ${section('about', 'Über mich', `
-      ${field('Statement', 'about.statement', { textarea: true, rows: 4, hint: 'HTML wie <em>…</em> erlaubt.' })}
-      ${field('Text', 'about.text', { textarea: true, rows: 4 })}
-      ${state.about.facts.map((f, i) => `
-        <div class="row">
-          ${field(`Fakt ${i + 1} — Zahl`, `about.facts.${i}.n`)}
-          ${field(`Fakt ${i + 1} — Label`, `about.facts.${i}.label`)}
-        </div>`).join('')}
-      <div class="row">
-        ${listField('Skills — Design', 'about.design')}
-        ${listField('Skills — Development', 'about.development')}
-      </div>
-    `, openSections)}
-
-    ${section('services', 'Services', `
-      ${state.services.map((s, i) => `
-        <div class="item">
-          <div class="item-head">
-            <span class="item-title">SERVICE ${String(i + 1).padStart(2, '0')}</span>
-            <button class="rm" data-rm="services.${i}">Entfernen</button>
-          </div>
-          ${field('Name', `services.${i}.name`)}
-          ${field('Text', `services.${i}.text`, { textarea: true, rows: 2 })}
-          ${field('Meta (klein, rechts)', `services.${i}.meta`)}
-        </div>`).join('')}
-      <button class="add" data-add="services">+ Service hinzufügen</button>
-    `, openSections)}
-
-    ${section('pricing', 'Preise', `
-      ${field('Intro-Text', 'pricing.lead', { textarea: true, rows: 2 })}
-      ${field('Hinweis (unten)', 'pricing.note')}
-      ${state.pricing.plans.map((p, i) => `
-        <div class="item">
-          <div class="item-head">
-            <span class="item-title">PAKET ${String(i + 1).padStart(2, '0')}${p.featured ? ' · FEATURED' : ''}</span>
-            <button class="rm" data-rm="pricing.plans.${i}">Entfernen</button>
-          </div>
-          <div class="row">
-            ${field('Name', `pricing.plans.${i}.tier`)}
-            ${field('Preis (ohne €)', `pricing.plans.${i}.price`)}
-          </div>
-          ${field('Tagline', `pricing.plans.${i}.tagline`)}
-          ${listField('Leistungen', `pricing.plans.${i}._features`, { hint: 'Zeile mit "-" beginnen = nicht enthalten.' })}
-          <div class="row">
-            ${field('Dauer', `pricing.plans.${i}.time`)}
-            ${field('Zielgruppe', `pricing.plans.${i}.best`)}
-          </div>
-          ${field('Button-Text', `pricing.plans.${i}.cta`)}
-        </div>`).join('')}
+  const openSet = new Set(qq('.section.open').map(s => s.dataset.sec));
+  q('#editor').innerHTML = [
+    sec('hero', 'Hero', `
+      ${field('Tagline','hero.tagline')}
+      ${listField('Headline-Zeilen','hero.lines','HTML wie <em>…</em> erlaubt.')}
+      ${field('Intro-Text','hero.lead',{ta:true})}
+      <div class="row">${field('Button 1','hero.ctaPrimary')}${field('Button 2','hero.ctaSecondary')}</div>
+    `, openSet),
+    sec('marquee','Laufband', listField('Begriffe','marquee'), openSet),
+    sec('work','Projekte', state.work.map((w,i) => `
+      <div class="item"><div class="item-head"><span class="item-title">PROJEKT ${String(i+1).padStart(2,'0')}</span><button class="rm" data-rm="work.${i}">Entfernen</button></div>
+      <div class="row">${field('Titel',`work.${i}.title`)}${field('Jahr',`work.${i}.year`)}</div>
+      ${field('Beschreibung',`work.${i}.desc`)}${listField('Tags',`work.${i}.tags`)}</div>`).join('')
+      + `<button class="add" data-add="work">+ Projekt hinzufügen</button>`, openSet),
+    sec('about','Über mich', `
+      ${field('Statement','about.statement',{ta:true,rows:4,hint:'HTML erlaubt.'})}
+      ${field('Text','about.text',{ta:true,rows:4})}
+      ${state.about.facts.map((f,i) => `<div class="row">${field(`Fakt ${i+1} — Zahl`,`about.facts.${i}.n`)}${field(`Fakt ${i+1} — Label`,`about.facts.${i}.label`)}</div>`).join('')}
+      <div class="row">${listField('Skills — Design','about.design')}${listField('Skills — Development','about.development')}</div>
+    `, openSet),
+    sec('services','Services', state.services.map((s,i) => `
+      <div class="item"><div class="item-head"><span class="item-title">SERVICE ${String(i+1).padStart(2,'0')}</span><button class="rm" data-rm="services.${i}">Entfernen</button></div>
+      ${field('Name',`services.${i}.name`)}${field('Text',`services.${i}.text`,{ta:true,rows:2})}${field('Meta',`services.${i}.meta`)}</div>`).join('')
+      + `<button class="add" data-add="services">+ Service hinzufügen</button>`, openSet),
+    sec('pricing','Preise', `
+      ${field('Intro-Text','pricing.lead',{ta:true,rows:2})}${field('Hinweis','pricing.note')}
+      ${state.pricing.plans.map((p,i) => `
+        <div class="item"><div class="item-head"><span class="item-title">PAKET ${String(i+1).padStart(2,'0')}${p.featured?' · FEATURED':''}</span><button class="rm" data-rm="pricing.plans.${i}">Entfernen</button></div>
+        <div class="row">${field('Name',`pricing.plans.${i}.tier`)}${field('Preis',`pricing.plans.${i}.price`)}</div>
+        ${field('Tagline',`pricing.plans.${i}.tagline`)}
+        ${listField('Leistungen',`pricing.plans.${i}._features`,'Zeile mit "-" = nicht enthalten.')}
+        <div class="row">${field('Dauer',`pricing.plans.${i}.time`)}${field('Zielgruppe',`pricing.plans.${i}.best`)}</div>
+        ${field('Button-Text',`pricing.plans.${i}.cta`)}</div>`).join('')}
       <button class="add" data-add="pricing.plans">+ Paket hinzufügen</button>
-    `, openSections)}
-
-    ${section('contact', 'Kontakt', `
-      ${field('Titel', 'contact.title', { textarea: true, rows: 2, hint: 'HTML wie <br /> und <em>…</em> erlaubt.' })}
-      ${field('Text', 'contact.lead', { textarea: true, rows: 2 })}
-      ${field('Email', 'contact.email')}
-    `, openSections)}
-
-    ${section('footer', 'Footer', `
-      ${field('Tagline', 'footer.tagline', { hint: '<br /> für Zeilenumbruch.' })}
-      ${state.footer.socials.map((s, i) => `
-        <div class="row">
-          ${field(`Social ${i + 1} — Label`, `footer.socials.${i}.label`)}
-          ${field(`Social ${i + 1} — URL`, `footer.socials.${i}.url`)}
-        </div>`).join('')}
-    `, openSections)}
-  `;
+    `, openSet),
+    sec('contact','Kontakt', `
+      ${field('Titel','contact.title',{ta:true,rows:2,hint:'HTML erlaubt.'})}
+      ${field('Text','contact.lead',{ta:true,rows:2})}${field('Email','contact.email')}
+    `, openSet),
+    sec('footer','Footer', `
+      ${field('Tagline','footer.tagline',{hint:'<br /> für Zeilenumbruch.'})}
+      ${state.footer.socials.map((s,i) => `<div class="row">${field(`Social ${i+1} — Label`,`footer.socials.${i}.label`)}${field(`Social ${i+1} — URL`,`footer.socials.${i}.url`)}</div>`).join('')}
+    `, openSet),
+  ].join('');
 }
 
-function section(key, title, body, openSet) {
-  const open = openSet.size === 0 ? key === 'hero' : openSet.has(key);
-  return `
-    <div class="section${open ? ' open' : ''}" data-sec="${key}">
-      <button class="sec-head" data-toggle="${key}">${title}<span class="chev">→</span></button>
-      <div class="sec-body">${body}</div>
-    </div>`;
-}
-
-/* features <-> textarea bridge */
-function syncFeatureViews() {
+function syncFeatures() {
   state.pricing.plans.forEach(p => {
-    p._features = (p.features || []).map(f => (f.included ? '' : '-') + f.text);
+    p._features = (p.features||[]).map(f => (f.included?'':'-') + f.text);
   });
 }
-function applyFeatureViews() {
+function applyFeatures() {
   state.pricing.plans.forEach(p => {
     if (!p._features) return;
-    p.features = p._features
-      .filter(l => l.trim())
-      .map(l => l.startsWith('-')
-        ? { text: l.slice(1).trim(), included: false }
-        : { text: l.trim(), included: true });
+    p.features = p._features.filter(l=>l.trim()).map(l =>
+      l.startsWith('-') ? {text:l.slice(1).trim(),included:false} : {text:l.trim(),included:true});
   });
 }
 function exportState() {
-  applyFeatureViews();
-  const clean = JSON.parse(JSON.stringify(state));
-  clean.pricing.plans.forEach(p => delete p._features);
-  return JSON.stringify(clean, null, 2) + '\n';
+  applyFeatures();
+  const c = JSON.parse(JSON.stringify(state));
+  c.pricing.plans.forEach(p => delete p._features);
+  return JSON.stringify(c, null, 2) + '\n';
 }
 
-/* ---------- events ---------- */
+/* events */
 document.addEventListener('input', e => {
-  const path = e.target.dataset.path;
-  if (!path) return;
-  let val = e.target.value;
-  if (e.target.dataset.list) val = val.split('\n');
-  else if (path.match(/facts\.\d+\.n$/)) val = +val || 0;
-  set(state, path, val);
+  const path = e.target.dataset.path; if (!path) return;
+  let v = e.target.value;
+  if (e.target.dataset.list) v = v.split('\n');
+  else if (path.match(/facts\.\d+\.n$/)) v = +v || 0;
+  setP(state, path, v);
 });
-
 document.addEventListener('click', e => {
-  const tgl = e.target.closest('[data-toggle]');
-  if (tgl) { tgl.closest('.section').classList.toggle('open'); return; }
-
+  if (e.target.closest('[data-toggle]')) { e.target.closest('.section').classList.toggle('open'); return; }
   const rm = e.target.closest('[data-rm]');
-  if (rm) {
-    const keys = rm.dataset.rm.split('.');
-    const idx = +keys.pop();
-    get(state, keys.join('.')).splice(idx, 1);
-    render();
-    return;
-  }
-
+  if (rm) { const ks=rm.dataset.rm.split('.'); const i=+ks.pop(); getP(state,ks.join('.')).splice(i,1); render(); return; }
   const add = e.target.closest('[data-add]');
   if (add) {
-    const arr = get(state, add.dataset.add);
-    const tpl = {
-      'work':          { title: 'Neues Projekt', desc: '', tags: [], year: String(new Date().getFullYear()) },
-      'services':      { name: 'Neuer Service', text: '', meta: '' },
-      'pricing.plans': { tier: 'Neu', price: '0', plus: false, featured: false, tagline: '', features: [], _features: [], time: '', best: '', cta: 'Projekt starten' },
-    }[add.dataset.add];
-    arr.push(JSON.parse(JSON.stringify(tpl)));
+    const tpls = {
+      'work':          {title:'Neues Projekt',desc:'',tags:[],year:String(new Date().getFullYear())},
+      'services':      {name:'Neuer Service',text:'',meta:''},
+      'pricing.plans': {tier:'Neu',price:'0',plus:false,featured:false,tagline:'',features:[],_features:[],time:'',best:'',cta:'Projekt starten'},
+    };
+    getP(state,add.dataset.add).push(JSON.parse(JSON.stringify(tpls[add.dataset.add])));
     render();
   }
 });
 
-/* ---------- download ---------- */
-$('#btnDownload').addEventListener('click', () => {
-  const blob = new Blob([exportState()], { type: 'application/json' });
-  const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(blob), download: 'content.json'
-  });
-  a.click();
-  URL.revokeObjectURL(a.href);
+/* download */
+q('#btnDownload').addEventListener('click', () => {
+  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([exportState()],{type:'application/json'})),download:'content.json'});
+  a.click(); URL.revokeObjectURL(a.href);
   toast('content.json heruntergeladen');
 });
 
-/* ---------- publish to GitHub ---------- */
-const dlg = $('#tokenDialog');
-$('#btnPublish').addEventListener('click', () => {
-  const token = localStorage.getItem('cms_token');
-  token ? publish(token) : dlg.showModal();
+/* logout */
+q('#btnLogout').addEventListener('click', () => {
+  clearSession();
+  location.reload();
 });
-$('#tokenCancel').addEventListener('click', () => dlg.close());
-$('#tokenSave').addEventListener('click', () => {
-  const t = $('#tokenInput').value.trim();
-  if (!t) return;
-  localStorage.setItem('cms_token', t);
-  dlg.close();
-  publish(t);
+
+/* publish */
+const dlg = q('#tokenDialog');
+q('#btnPublish').addEventListener('click', () => { localStorage.getItem('cms_token') ? publish(localStorage.getItem('cms_token')) : dlg.showModal(); });
+q('#tokenCancel').addEventListener('click', () => dlg.close());
+q('#tokenSave').addEventListener('click', () => {
+  const t = q('#tokenInput').value.trim(); if (!t) return;
+  localStorage.setItem('cms_token', t); dlg.close(); publish(t);
 });
 
 async function publish(token) {
-  const btn = $('#btnPublish');
-  btn.disabled = true;
-  btn.textContent = 'Veröffentliche…';
+  const btn = q('#btnPublish'); btn.disabled = true; btn.textContent = 'Veröffentliche…';
   try {
-    const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
-    const headers = {
-      'Authorization': 'Bearer ' + token,
-      'Accept': 'application/vnd.github+json',
-    };
-    const cur = await fetch(`${api}?ref=${BRANCH}`, { headers });
-    if (cur.status === 401 || cur.status === 403) {
-      localStorage.removeItem('cms_token');
-      throw new Error('Token ungültig — bitte neu eingeben.');
-    }
+    const api = `https://api.github.com/repos/fxshr29/FXSHR/contents/content.json`;
+    const h   = {'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'};
+    const cur = await fetch(api+'?ref=main', {headers:h});
+    if (cur.status===401||cur.status===403) { localStorage.removeItem('cms_token'); throw new Error('Token ungültig.'); }
     const sha = cur.ok ? (await cur.json()).sha : undefined;
-
-    const body = {
-      message: 'CMS: Inhalte aktualisiert',
-      content: btoa(unescape(encodeURIComponent(exportState()))),
-      branch: BRANCH,
-      ...(sha ? { sha } : {}),
-    };
-    const res = await fetch(api, { method: 'PUT', headers, body: JSON.stringify(body) });
-    if (!res.ok) throw new Error('GitHub-Fehler: ' + res.status);
+    const res = await fetch(api, {method:'PUT',headers:h,body:JSON.stringify({message:'CMS: Inhalte aktualisiert',content:btoa(unescape(encodeURIComponent(exportState()))),branch:'main',...(sha?{sha}:{})})});
+    if (!res.ok) throw new Error('GitHub-Fehler: '+res.status);
     toast('✓ Veröffentlicht! Website aktualisiert sich in ~1 Minute.');
-  } catch (err) {
-    toast(err.message || 'Veröffentlichen fehlgeschlagen', true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Veröffentlichen';
-  }
+  } catch(e) { toast(e.message||'Fehler', true); }
+  finally { btn.disabled=false; btn.textContent='Veröffentlichen'; }
 }
 
-/* ---------- boot ---------- */
-(async () => {
-  try {
-    const res = await fetch('content.json', { cache: 'no-store' });
-    state = await res.json();
-    syncFeatureViews();
-    render();
-  } catch {
-    $('#editor').innerHTML = '<p style="color:var(--muted)">content.json konnte nicht geladen werden. Bitte über einen Webserver öffnen (z.B. GitHub Pages).</p>';
-  }
-})();
+function initCms() {
+  if (state) { render(); return; }
+  fetch('content.json',{cache:'no-store'})
+    .then(r=>r.json())
+    .then(c => { state=c; syncFeatures(); render(); })
+    .catch(() => { q('#editor').innerHTML='<p style="color:var(--muted)">content.json konnte nicht geladen werden.</p>'; });
+}
 </script>
 </body>
 </html>
