@@ -167,5 +167,21 @@
       { "label": "GitHub", "url": "https://github.com/fxshr29" },
       { "label": "LinkedIn", "url": "#" }
     ]
+  },
+  "client": {
+    "passwordHash": "",
+    "welcome": "Willkommen! Hier findest du alle Infos zu deinem Projekt.",
+    "project": {
+      "name": "Dein Projekt",
+      "stages": [
+        { "label": "Briefing",     "done": true  },
+        { "label": "Design",       "done": false, "current": true },
+        { "label": "Development",  "done": false },
+        { "label": "Review",       "done": false },
+        { "label": "Launch",       "done": false }
+      ]
+    },
+    "updates": [],
+    "documents": []
   }
 }
