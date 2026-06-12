@@ -339,12 +339,14 @@ function initForm() {
   });
 }
 
+let _content = null;
+
 /* =====================================================
    BOOT
    ===================================================== */
 (async function boot() {
   const content = await loadContent();
-  if (content) hydrate(content);
+  if (content) { _content = content; hydrate(content); }
 
   initCursor();
   bindMagnetic();
@@ -355,130 +357,116 @@ function initForm() {
   initCounters();
   initClock();
   initForm();
-  initSpotlight();
-  initTilt();
-  initRipple();
-  initParallax();
+  initChat();
 })();
 
 /* =====================================================
-   SPOTLIGHT — radial glow tracks cursor
+   AI CHAT WIDGET
    ===================================================== */
-function initSpotlight() {
-  if (matchMedia('(hover: none)').matches) return;
-  const root = document.documentElement;
-  addEventListener('mousemove', e => {
-    root.style.setProperty('--spot-x', e.clientX + 'px');
-    root.style.setProperty('--spot-y', e.clientY + 'px');
-  });
-}
+function initChat() {
+  const widget  = document.getElementById('chatWidget');
+  const toggle  = document.getElementById('chatToggle');
+  const msgs    = document.getElementById('chatMessages');
+  const input   = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('chatSend');
+  const noKey   = document.getElementById('chatNoKey');
+  if (!widget) return;
 
-/* =====================================================
-   3-D TILT on cards
-   ===================================================== */
-function initTilt() {
-  if (matchMedia('(hover: none)').matches) return;
+  let open    = false;
+  let history = [];
+  const apiKey = () => localStorage.getItem('cms_groq_key') || '';
 
-  function bindTilt(el, strength = 10, lift = 8) {
-    if (el.dataset.tiltBound) return;
-    el.dataset.tiltBound = '1';
-    el.style.willChange = 'transform';
-    el.addEventListener('mousemove', e => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width  - 0.5;
-      const y = (e.clientY - r.top)  / r.height - 0.5;
-      el.style.transform =
-        `perspective(900px) rotateX(${-y * strength}deg) rotateY(${x * strength}deg) translateZ(${lift}px)`;
-      el.style.setProperty('--shine-x', (x + 0.5) * 100 + '%');
-      el.style.setProperty('--shine-y', (y + 0.5) * 100 + '%');
-    });
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = '';
-      el.style.removeProperty('--shine-x');
-      el.style.removeProperty('--shine-y');
-    });
+  function buildSystem() {
+    const c = _content || {};
+    const h = c.hero     || {};
+    const a = c.about    || {};
+    const s = c.services || [];
+    const p = (c.pricing || {}).plans || [];
+    return [
+      'Du bist der Assistent von Felix, einem freiberuflichen Designer und Developer aus Deutschland.',
+      'Antworte immer auf Deutsch, freundlich, professionell und prägnant (max. 3 Sätze).',
+      '',
+      'Über Felix:',
+      '- ' + (h.lead || 'Designer & Developer an der Schnittstelle von Ästhetik und Technik.'),
+      '- Design-Skills: ' + (a.design || []).join(', '),
+      '- Dev-Skills: ' + (a.development || []).join(', '),
+      '- ' + (a.facts || []).map(f => f.n + '+ ' + f.label).join(', '),
+      '',
+      'Services: ' + s.map(sv => sv.name).join(', '),
+      'Pakete: ' + p.map(pl => pl.tier + ' ab €' + pl.price).join(', '),
+      'Kontakt: fxshr@yahoo.com',
+      '',
+      'Verweise bei konkreten Projektanfragen auf das Kontaktformular.',
+    ].join('\n');
   }
 
-  // Bind current elements and re-bind after CMS re-renders
-  function bindAll() {
-    document.querySelectorAll('.price-card').forEach(el => bindTilt(el, 8, 10));
-    document.querySelectorAll('.svc-row').forEach(el => bindTilt(el, 3, 4));
-    document.querySelectorAll('.work-item').forEach(el => bindTilt(el, 2, 3));
+  function scrollDown() { msgs.scrollTop = msgs.scrollHeight; }
+
+  function addMsg(role, text) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg chat-msg-' + (role === 'user' ? 'user' : 'bot');
+    const p = document.createElement('p');
+    p.textContent = text;
+    div.appendChild(p);
+    msgs.appendChild(div);
+    scrollDown();
   }
-  bindAll();
-  // Re-run when CMS re-renders DOM
-  new MutationObserver(bindAll).observe(document.getElementById('pricing-grid') || document.body, {
-    childList: true, subtree: true
+
+  function setLoading(on) {
+    const existing = msgs.querySelector('.chat-typing');
+    if (on && !existing) {
+      const t = document.createElement('div');
+      t.className = 'chat-msg chat-msg-bot chat-typing';
+      t.innerHTML = '<span></span><span></span><span></span>';
+      msgs.appendChild(t);
+      scrollDown();
+    } else if (!on && existing) {
+      existing.remove();
+    }
+  }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text) return;
+    const key = apiKey();
+    if (!key) { noKey.style.display = 'block'; return; }
+    noKey.style.display = 'none';
+    input.value = '';
+    addMsg('user', text);
+    history.push({ role: 'user', content: text });
+    setLoading(true);
+    sendBtn.disabled = true;
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'system', content: buildSystem() }, ...history.slice(-10)],
+          max_tokens: 300,
+          temperature: 0.7
+        })
+      });
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content || 'Entschuldigung, da ist etwas schiefgelaufen.';
+      setLoading(false);
+      history.push({ role: 'assistant', content: reply });
+      addMsg('bot', reply);
+    } catch {
+      setLoading(false);
+      addMsg('bot', 'Verbindungsfehler. Bitte versuche es erneut.');
+    }
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  toggle.addEventListener('click', () => {
+    open = !open;
+    widget.classList.toggle('chat-open', open);
+    if (open) setTimeout(() => input.focus(), 300);
+  });
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
   });
 }
-
-/* =====================================================
-   CLICK RIPPLE
-   ===================================================== */
-function initRipple() {
-  document.addEventListener('click', e => {
-    const r = document.createElement('span');
-    r.className = 'ripple';
-    r.style.left = e.clientX + 'px';
-    r.style.top  = e.clientY + 'px';
-    document.body.appendChild(r);
-    r.addEventListener('animationend', () => r.remove());
-  });
-}
-
-/* =====================================================
-   PARALLAX — hero elements shift on scroll
-   ===================================================== */
-function initParallax() {
-  const hero   = document.querySelector('.hero');
-  const glow   = document.querySelector('.hero-glow');
-  const title  = document.querySelector('.hero-title');
-  if (!hero || !glow) return;
-
-  let ticking = false;
-  addEventListener('scroll', () => {
-    if (ticking) return;
-    requestAnimationFrame(() => {
-      const y = scrollY;
-      if (y < innerHeight * 1.5) {
-        if (glow)  glow.style.transform  = `translate(-50%, calc(-50% + ${y * 0.25}px))`;
-        if (title) title.style.transform = `translateY(${y * 0.1}px)`;
-      }
-      ticking = false;
-    });
-    ticking = true;
-  }, { passive: true });
-}
-
-/* =====================================================
-   TEXT SCRAMBLE — on hero lines after reveal
-   ===================================================== */
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
-
-function scrambleEl(el) {
-  const finalHTML = el.innerHTML;
-  const finalText = el.textContent;
-  let iter = 0;
-  const total = finalText.replace(/\s/g, '').length * 1.6;
-  const iv = setInterval(() => {
-    el.textContent = finalText.split('').map((c, i) => {
-      if (c === ' ') return ' ';
-      if (i < iter / 1.5) return finalText[i];
-      return CHARS[Math.floor(Math.random() * CHARS.length)];
-    }).join('');
-    iter++;
-    if (iter >= total) { el.innerHTML = finalHTML; clearInterval(iv); }
-  }, 28);
-}
-
-// Hook into kickHero — override to also scramble
-const _origKickHero = kickHero;
-kickHero = function() {
-  _origKickHero();
-  // scramble after lines are revealed
-  setTimeout(() => {
-    document.querySelectorAll('.ht-line > span').forEach((el, i) => {
-      setTimeout(() => scrambleEl(el), i * 160 + 200);
-    });
-  }, 400);
-};

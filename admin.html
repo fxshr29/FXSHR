@@ -363,6 +363,7 @@
     <div class="tb-actions">
       <a class="btn btn-line" href="index.html">← Zur Website</a>
       <button class="btn btn-line" id="btnDownload">JSON herunterladen</button>
+      <button class="btn btn-line" id="btnSettings">Einstellungen</button>
       <button class="btn btn-line" id="btnLogout">Abmelden</button>
       <button class="btn btn-light" id="btnPublish">Veröffentlichen</button>
     </div>
@@ -390,6 +391,26 @@
   <div class="dlg-actions">
     <button class="btn btn-line" id="tokenCancel">Abbrechen</button>
     <button class="btn btn-light" id="tokenSave">Speichern &amp; veröffentlichen</button>
+  </div>
+</dialog>
+
+<dialog id="settingsDialog">
+  <h3>Einstellungen</h3>
+  <p>KI-Chat und Client-Portal konfigurieren.</p>
+  <div class="f">
+    <label for="groqKeyInput">Groq API-Key (KI-Chat)</label>
+    <input type="password" id="groqKeyInput" placeholder="gsk_…" autocomplete="off" />
+    <div class="hint">Kostenlos auf <a href="https://console.groq.com" target="_blank" rel="noopener" style="color:var(--accent)">console.groq.com</a> — Free Tier reicht aus. Wird nur lokal gespeichert.</div>
+  </div>
+  <div class="f" style="margin-top:8px">
+    <label for="clientPwdInput">Client-Portal Passwort</label>
+    <input type="password" id="clientPwdInput" placeholder="Neues Passwort setzen (min. 6 Zeichen)" autocomplete="new-password" />
+    <div class="hint">Kunden-Login unter <a href="login.html" style="color:var(--accent)">login.html</a> — Hash wird in content.json gespeichert.</div>
+  </div>
+  <div id="settingsMsg" style="font-family:var(--mono);font-size:.72rem;color:var(--green);min-height:18px;margin-top:6px"></div>
+  <div class="dlg-actions">
+    <button class="btn btn-line" id="settingsClose">Schließen</button>
+    <button class="btn btn-light" id="settingsSave">Speichern</button>
   </div>
 </dialog>
 
@@ -689,9 +710,8 @@ function startLockCountdown() {
 })();
 
 /* =====================================================
-   CMS APP
+   CMS APP — continued in next script block
    ===================================================== */
-const $ = s => document.querySelector(s); // re-declare is fine (same function)
 </script>
 
 <script>
@@ -865,6 +885,34 @@ async function publish(token) {
   } catch(e) { toast(e.message||'Fehler', true); }
   finally { btn.disabled=false; btn.textContent='Veröffentlichen'; }
 }
+
+/* settings dialog */
+const settingsDlg = q('#settingsDialog');
+q('#btnSettings').addEventListener('click', () => {
+  q('#groqKeyInput').value = localStorage.getItem('cms_groq_key') || '';
+  q('#clientPwdInput').value = '';
+  q('#settingsMsg').textContent = '';
+  settingsDlg.showModal();
+});
+q('#settingsClose').addEventListener('click', () => settingsDlg.close());
+q('#settingsSave').addEventListener('click', async () => {
+  const groqKey   = q('#groqKeyInput').value.trim();
+  const clientPwd = q('#clientPwdInput').value;
+  if (groqKey) localStorage.setItem('cms_groq_key', groqKey);
+  else localStorage.removeItem('cms_groq_key');
+  if (clientPwd) {
+    if (clientPwd.length < 6) { q('#settingsMsg').style.color = 'var(--red)'; q('#settingsMsg').textContent = 'Passwort muss mind. 6 Zeichen haben.'; return; }
+    const hash = await sha256(clientPwd);
+    if (!state.client) state.client = { passwordHash: '', welcome: 'Willkommen im Client-Portal!', project: { name: 'Dein Projekt', stages: [] }, updates: [], documents: [] };
+    state.client.passwordHash = hash;
+    q('#settingsMsg').style.color = 'var(--green)';
+    q('#settingsMsg').textContent = '✓ Passwort gesetzt — jetzt veröffentlichen!';
+  } else {
+    q('#settingsMsg').style.color = 'var(--green)';
+    q('#settingsMsg').textContent = '✓ Einstellungen gespeichert.';
+  }
+  if (!clientPwd) setTimeout(() => settingsDlg.close(), 800);
+});
 
 function initCms() {
   if (state) { render(); return; }

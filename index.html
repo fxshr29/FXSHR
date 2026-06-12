@@ -78,6 +78,7 @@
         <a href="#services" class="nav-item" data-cursor="hover"><span>Services</span></a>
         <a href="#pricing"  class="nav-item" data-cursor="hover"><span>Preise</span></a>
         <a href="#contact"  class="nav-item" data-cursor="hover"><span>Contact</span></a>
+        <a href="login.html" class="nav-item" data-cursor="hover"><span>Portal</span></a>
         <div class="menu-footer">
           <div class="mf-left">
             <span class="mf-label">Direkt erreichen</span>
@@ -552,6 +553,37 @@
       <span>Designed &amp; developed with care. · <a href="admin.html" class="cms-link" data-cursor="hover">CMS</a></span>
     </div>
   </footer>
+
+  <!-- ===== CHAT WIDGET ===== -->
+  <div class="chat-widget" id="chatWidget">
+    <button class="chat-toggle" id="chatToggle" aria-label="Mit Felix AI chatten">
+      <svg class="chat-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <svg class="chat-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-header">
+        <div class="chat-avatar">F</div>
+        <div>
+          <div class="chat-name">Felix AI</div>
+          <div class="chat-status">Beantwortet deine Fragen</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg chat-msg-bot">
+          <p>Hallo! Ich bin Felix' Assistent. Frag mich alles über Projekte, Services oder Preise.</p>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Schreib eine Nachricht…" autocomplete="off" />
+        <button class="chat-send" id="chatSend" aria-label="Senden">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="chat-no-key" id="chatNoKey">
+        <p>KI nicht konfiguriert. <a href="admin.html">Groq API-Key einrichten →</a></p>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
