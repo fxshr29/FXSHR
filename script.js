@@ -355,4 +355,130 @@ function initForm() {
   initCounters();
   initClock();
   initForm();
+  initSpotlight();
+  initTilt();
+  initRipple();
+  initParallax();
 })();
+
+/* =====================================================
+   SPOTLIGHT — radial glow tracks cursor
+   ===================================================== */
+function initSpotlight() {
+  if (matchMedia('(hover: none)').matches) return;
+  const root = document.documentElement;
+  addEventListener('mousemove', e => {
+    root.style.setProperty('--spot-x', e.clientX + 'px');
+    root.style.setProperty('--spot-y', e.clientY + 'px');
+  });
+}
+
+/* =====================================================
+   3-D TILT on cards
+   ===================================================== */
+function initTilt() {
+  if (matchMedia('(hover: none)').matches) return;
+
+  function bindTilt(el, strength = 10, lift = 8) {
+    if (el.dataset.tiltBound) return;
+    el.dataset.tiltBound = '1';
+    el.style.willChange = 'transform';
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      el.style.transform =
+        `perspective(900px) rotateX(${-y * strength}deg) rotateY(${x * strength}deg) translateZ(${lift}px)`;
+      el.style.setProperty('--shine-x', (x + 0.5) * 100 + '%');
+      el.style.setProperty('--shine-y', (y + 0.5) * 100 + '%');
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+      el.style.removeProperty('--shine-x');
+      el.style.removeProperty('--shine-y');
+    });
+  }
+
+  // Bind current elements and re-bind after CMS re-renders
+  function bindAll() {
+    document.querySelectorAll('.price-card').forEach(el => bindTilt(el, 8, 10));
+    document.querySelectorAll('.svc-row').forEach(el => bindTilt(el, 3, 4));
+    document.querySelectorAll('.work-item').forEach(el => bindTilt(el, 2, 3));
+  }
+  bindAll();
+  // Re-run when CMS re-renders DOM
+  new MutationObserver(bindAll).observe(document.getElementById('pricing-grid') || document.body, {
+    childList: true, subtree: true
+  });
+}
+
+/* =====================================================
+   CLICK RIPPLE
+   ===================================================== */
+function initRipple() {
+  document.addEventListener('click', e => {
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    r.style.left = e.clientX + 'px';
+    r.style.top  = e.clientY + 'px';
+    document.body.appendChild(r);
+    r.addEventListener('animationend', () => r.remove());
+  });
+}
+
+/* =====================================================
+   PARALLAX — hero elements shift on scroll
+   ===================================================== */
+function initParallax() {
+  const hero   = document.querySelector('.hero');
+  const glow   = document.querySelector('.hero-glow');
+  const title  = document.querySelector('.hero-title');
+  if (!hero || !glow) return;
+
+  let ticking = false;
+  addEventListener('scroll', () => {
+    if (ticking) return;
+    requestAnimationFrame(() => {
+      const y = scrollY;
+      if (y < innerHeight * 1.5) {
+        if (glow)  glow.style.transform  = `translate(-50%, calc(-50% + ${y * 0.25}px))`;
+        if (title) title.style.transform = `translateY(${y * 0.1}px)`;
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }, { passive: true });
+}
+
+/* =====================================================
+   TEXT SCRAMBLE — on hero lines after reveal
+   ===================================================== */
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
+
+function scrambleEl(el) {
+  const finalHTML = el.innerHTML;
+  const finalText = el.textContent;
+  let iter = 0;
+  const total = finalText.replace(/\s/g, '').length * 1.6;
+  const iv = setInterval(() => {
+    el.textContent = finalText.split('').map((c, i) => {
+      if (c === ' ') return ' ';
+      if (i < iter / 1.5) return finalText[i];
+      return CHARS[Math.floor(Math.random() * CHARS.length)];
+    }).join('');
+    iter++;
+    if (iter >= total) { el.innerHTML = finalHTML; clearInterval(iv); }
+  }, 28);
+}
+
+// Hook into kickHero — override to also scramble
+const _origKickHero = kickHero;
+kickHero = function() {
+  _origKickHero();
+  // scramble after lines are revealed
+  setTimeout(() => {
+    document.querySelectorAll('.ht-line > span').forEach((el, i) => {
+      setTimeout(() => scrambleEl(el), i * 160 + 200);
+    });
+  }, 400);
+};

@@ -72,6 +72,44 @@ img, svg { display: block; max-width: 100%; }
   90% { transform: translate(-3%,3%); }
 }
 
+/* === IMMERSIVE: SPOTLIGHT === */
+:root { --spot-x: 50vw; --spot-y: 50vh; }
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(700px circle at var(--spot-x) var(--spot-y), rgba(200,185,255,.055), transparent 40%);
+  pointer-events: none; z-index: 2;
+}
+
+/* === IMMERSIVE: TILT SHINE === */
+.price-card, .svc-row {
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform .5s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease) !important;
+}
+.price-card::after, .svc-row::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(200px circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255,255,255,.07), transparent 60%);
+  opacity: 0; transition: opacity .3s;
+}
+.price-card:hover::after, .svc-row:hover::after { opacity: 1; }
+
+/* === IMMERSIVE: CLICK RIPPLE === */
+.ripple {
+  position: fixed;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(200,185,255,.5);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  z-index: 9999;
+  animation: rippleOut .6s var(--ease) forwards;
+}
+@keyframes rippleOut {
+  to { transform: translate(-50%, -50%) scale(22); opacity: 0; }
+}
+
 /* === SCROLL PROGRESS === */
 .progress {
   position: fixed;
