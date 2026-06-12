@@ -12,7 +12,7 @@ const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const count = document.getElementById('loaderCount');
   let p = 0;
   const iv = setInterval(() => {
-    p += Math.random() * 16 + 5;
+    p += Math.random() * 28 + 22;
     if (p >= 100) {
       p = 100;
       clearInterval(iv);
@@ -22,12 +22,12 @@ const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
         el.classList.add('done');
         document.body.classList.add('loaded');
         kickHero();
-      }, 550);
+      }, 200);
     } else {
       fill.style.width = p + '%';
       count.textContent = Math.floor(p);
     }
-  }, 110);
+  }, 55);
 })();
 
 function kickHero() {
@@ -216,19 +216,20 @@ function bindMagnetic() {
   });
 }
 
-/* Work media preview follows cursor (delegated) */
+/* Work media preview follows cursor — positions only the hovered
+   item's preview, no permanent rAF loop. */
 function initWorkMedia() {
   if (matchMedia('(hover: none)').matches) return;
-  let mx = 0, my = 0, tx = 0, ty = 0;
+  let raf = 0;
   document.addEventListener('mousemove', e => {
-    if (e.target.closest('.work-item')) { mx = e.clientX; my = e.clientY; }
+    const item = e.target.closest('.work-item');
+    if (!item || raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      const m = item.querySelector('.wi-media');
+      if (m) { m.style.left = e.clientX + 'px'; m.style.top = e.clientY + 'px'; }
+    });
   });
-  (function loop() {
-    tx += (mx - tx) * 0.12;
-    ty += (my - ty) * 0.12;
-    $$('.wi-media').forEach(m => { m.style.left = tx + 'px'; m.style.top = ty + 'px'; });
-    requestAnimationFrame(loop);
-  })();
 }
 
 /* Nav: scroll state, active link, burger, progress bar */
@@ -238,13 +239,32 @@ function initNav() {
   const menu     = document.getElementById('navMenu');
   const progress = document.getElementById('progressBar');
 
+  // Cache section offsets and nav items — querying + reading offsetTop on
+  // every scroll event caused layout thrashing.
+  const navItems = $$('.nav-item');
+  let sections = [], maxScroll = 1;
+  function measure() {
+    sections = $$('section[id], main[id]').map(s => ({ id: s.id, top: s.offsetTop }));
+    maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  }
+  measure();
+  addEventListener('resize', measure, { passive: true });
+  addEventListener('load', measure);
+  setTimeout(measure, 1200); // re-measure after CMS hydration settles
+
+  let ticking = false;
   addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', scrollY > 30);
-    const max = document.documentElement.scrollHeight - innerHeight;
-    if (progress) progress.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
-    let cur = '';
-    $$('section[id], main[id]').forEach(s => { if (scrollY >= s.offsetTop - 250) cur = s.id; });
-    $$('.nav-item').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const y = scrollY;
+      nav.classList.toggle('scrolled', y > 30);
+      if (progress) progress.style.transform = `scaleX(${y / maxScroll})`;
+      let cur = '';
+      for (const s of sections) if (y >= s.top - 250) cur = s.id;
+      navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    });
   }, { passive: true });
 
   function closeMenu() {
